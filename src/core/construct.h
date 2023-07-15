@@ -1,3 +1,6 @@
+#ifndef CONSTRUCT_H
+#define CONSTRUCT_H
+
 #define NO_PLAYER 0
 
 class Construct
@@ -17,3 +20,5 @@ public:
   virtual bool Destory() = 0;
   bool IsBlock() { return blockable; }
 };
+
+#endif

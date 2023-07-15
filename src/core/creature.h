@@ -1,4 +1,7 @@
 #include "point.h"
+#ifndef CREATURE_H
+#define CREATURE_H
+
 class Creature
 {
 private:
@@ -18,3 +21,5 @@ public:
   double GetSpeed() { return this->speed; }
   void Move(int x, int y);
 };
+
+#endif

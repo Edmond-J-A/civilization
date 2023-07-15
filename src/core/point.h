@@ -1,3 +1,6 @@
+#ifndef POINT_H
+#define POINT_H
+
 class Point
 {
 private:
@@ -15,3 +18,5 @@ public:
   bool operator>(const Point &other) const { return this->x > other.x && this->y > other.y; }
   bool operator==(const Point &other) const { return this->x == other.x && this->y == other.y; }
 };
+
+#endif

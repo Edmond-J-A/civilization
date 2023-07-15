@@ -1,3 +1,6 @@
+#ifndef ANIMATION_H
+#define ANIMATION_H
+
 #include <map>
 #include <vector>
 #include <iostream>
@@ -22,3 +25,5 @@ public:
   std::string GetNowFrame() { return this->state[this->nowState][nowFrame]; }
   std::string GetState() { return this->nowState; }
 };
+
+#endif

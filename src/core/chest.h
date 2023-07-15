@@ -1,3 +1,6 @@
+#ifndef CHEST_H
+#define CHEST_H
+
 #include "item.h"
 
 class Chest
@@ -10,3 +13,5 @@ public:
   Chest(int _capacity);
   ~Chest();
 };
+
+#endif

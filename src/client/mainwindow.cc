@@ -224,6 +224,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
   {
     this->isbuilding = !this->isbuilding;
   }
+  else if (event->key() == Qt::Key_E)
+  {
+    ui->bag_background->setVisible(!ui->bag_background->isVisible());
+    ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
+  }
   else
   {
     // 处理其他按键事件

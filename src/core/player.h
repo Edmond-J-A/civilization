@@ -1,8 +1,12 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include "creature.h"
 #include "animation.h"
 #include "item.h"
 
-#define BAG_VOLUME 48
+#define BAG_VOLUME 50
+#define BAG_COL 10
 
 class Player : public Creature, public Animation
 {
@@ -18,3 +22,5 @@ public:
   Point GetLocation() { return Creature::GetLocation(); }
   void Move(Point p);
 };
+
+#endif
