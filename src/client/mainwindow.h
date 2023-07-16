@@ -19,7 +19,7 @@
 
 #include "../core/construct.h"
 #include "../core/player.h"
-
+#include "item_slot.h"
 
 #define DEFUALT_WIDTH 960
 #define DEFUALT_HEIGHT 640
@@ -77,6 +77,7 @@ private:
   int ANIMATION_TIME;
   Animation building_cursor;
   QTimer *pressTimer;
+  std::vector<ItemSlot *> toolbar_button,bag_button,toolbar_bag_button;
 
 private slots:
   void on_B_set_clicked();
@@ -86,6 +87,8 @@ private slots:
   void on_voiceSlider_valueChanged(int value);
   void on_B_pause_clicked();
   void on_voice_check_stateChanged(int state);
+
+  void on_abc_clicked();
 };
 
 #endif // MAINWINDOW_H

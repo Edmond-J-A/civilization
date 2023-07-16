@@ -1,10 +1,9 @@
 #ifndef ITEM_H
-#define ITEM_IMPLEMENT_H
-
+#define ITEM_H
 
 #include <iostream>
 
-#define DEFAULT_MAX_STACK
+#define DEFAULT_MAX_STACK 64
 
 class Item
 {
@@ -26,6 +25,7 @@ public:
   double GetDurability() { return this->durability; }
   bool operator==(const Item &other) { return (this->ID == other.ID && this->name == other.name); }
   bool IsValid() { return ID > 0; }
+  std::string GetPath() { return this->path; }
 };
 
 #endif

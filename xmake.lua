@@ -15,6 +15,8 @@ target("mocvclient")
     add_files("src/client/mainwindow.ui")
     -- add files with Q_OBJECT meta (only for qt.moc)
     add_files("src/client/mainwindow.h")
+    add_files("src/client/item_slot.h")
+
     after_build(function (target)
         os.cp("src/client/res", target:targetdir())
     end)

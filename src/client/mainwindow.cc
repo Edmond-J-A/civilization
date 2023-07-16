@@ -8,6 +8,71 @@ MainWindow::MainWindow(QWidget *parent)
   ui->stackedWidget->setStyleSheet("background-color: transparent;");
   Init();
 
+  // 太丑了 要优化
+  for (int i = 0; i < 10; i++)
+  {
+    ItemSlot *is = new ItemSlot(this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("bag_toolbar_%1").arg(i));
+    ui->bag_toolbar->addWidget(is);
+    is->setVisible(false);
+
+    toolbar_bag_button.push_back(is);
+  }
+  for (int i = 0; i < 10; i++)
+  {
+    ItemSlot *is = new ItemSlot(this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("bag_col1_%1").arg(i));
+    ui->bag_col1->addWidget(is);
+    bag_button.push_back(is);
+    is->setVisible(false);
+  }
+  for (int i = 0; i < 10; i++)
+  {
+    ItemSlot *is = new ItemSlot(this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("bag_col2_%1").arg(i));
+    ui->bag_col2->addWidget(is);
+    bag_button.push_back(is);
+    is->setVisible(false);
+  }
+  for (int i = 0; i < 10; i++)
+  {
+    ItemSlot *is = new ItemSlot(this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("bag_col3_%1").arg(i));
+    ui->bag_col3->addWidget(is);
+    bag_button.push_back(is);
+    is->setVisible(false);
+  }
+  for (int i = 0; i < 10; i++)
+  {
+    ItemSlot *is = new ItemSlot(this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("bag_col4_%1").arg(i));
+    ui->bag_col4->addWidget(is);
+    bag_button.push_back(is);
+    is->setVisible(false);
+  }
+  for (int i = 0; i < 10; i++)
+  {
+    ItemSlot *is = new ItemSlot(this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("bag_col5_%1").arg(i));
+    ui->bag_col5->addWidget(is);
+    bag_button.push_back(is);
+    is->setVisible(false);
+  }
+  for (int i = 0; i < 10; i++)
+  {
+    ItemSlot *is = new ItemSlot(this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("toolbar_%1").arg(i));
+    ui->toolbar->addWidget(is);
+    toolbar_button.push_back(is);
+  }
+
   pressTimer = new QTimer(this);
   pressTimer->setSingleShot(true);
   connect(pressTimer, &QTimer::timeout, this, &handleDelayedKeyRelease);
@@ -40,6 +105,8 @@ MainWindow::MainWindow(QWidget *parent)
   p->SetTimerID(startTimer(150));
   p->AddState("idle", "./res/game/c1/c1_idel/c1_idel (%%).png", 1, 8);
   p->AddState("walk", "./res/game/c1/c1_walk/c1_walk (%%).png", 1, 8);
+  Item Wood(1, "wood", DEFAULT_MAX_STACK, "./res/game/items/1-wood.png");
+  p->PickUp(Item_Pickup(Wood, 10));
 }
 
 MainWindow::~MainWindow()
@@ -228,6 +295,38 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
   {
     ui->bag_background->setVisible(!ui->bag_background->isVisible());
     ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
+
+    if (toolbar_button[0]->isVisible())
+    {
+      for (int i = 0; i < toolbar_button.size(); i++)
+      {
+        toolbar_bag_button[i]->SetItemPickup(toolbar_button[i]->GetItemPickup());
+      }
+      for (int i = 0; i < bag_button.size(); i++)
+      {
+        bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+      }
+    }
+    else
+    {
+      for (int i = 0; i < toolbar_button.size(); i++)
+      {
+        toolbar_button[i]->SetItemPickup(toolbar_bag_button[i]->GetItemPickup());
+      }
+    }
+
+    for (int i = 0; i < bag_button.size(); i++)
+    {
+      bag_button[i]->setVisible(!bag_button[i]->isVisible());
+    }
+    for (int i = 0; i < toolbar_button.size(); i++)
+    {
+      toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
+    }
+    for (int i = 0; i < toolbar_bag_button.size(); i++)
+    {
+      toolbar_bag_button[i]->setVisible(!toolbar_bag_button[i]->isVisible());
+    }
   }
   else
   {
@@ -386,4 +485,11 @@ std::map<Point, int> MainWindow::GetDecorate(Point left_top, Point right_down)
     }
   }
   return res;
+}
+
+void MainWindow::on_abc_clicked()
+{
+
+  Item Wood(1, "wood", DEFAULT_MAX_STACK, "./res/game/items/1-wood.png");
+  this->me->PickUp(Item_Pickup(Wood, 10));
 }

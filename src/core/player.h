@@ -8,11 +8,19 @@
 #define BAG_VOLUME 50
 #define BAG_COL 10
 
+struct Item_Pickup
+{
+  Item item;
+  int number = -1;
+  Item_Pickup() : number(-1) {}
+  Item_Pickup(const Item &item, int number) : item(item), number(number) {}
+};
+
 class Player : public Creature, public Animation
 {
 private:
   int ID = -1;
-  Item bag[BAG_VOLUME];
+  Item_Pickup bag[BAG_VOLUME];
   std::string name = "";
 
 public:
@@ -21,6 +29,8 @@ public:
   int GetID() { return ID; }
   Point GetLocation() { return Creature::GetLocation(); }
   void Move(Point p);
+  void PickUp(Item_Pickup i);
+  Item_Pickup GetPickup(int i) { return this->bag[i]; }
 };
 
 #endif
