@@ -2,8 +2,12 @@
 #define ITEM_SLOT_H
 
 #include <QWidget>
+#include <QDrag>
+#include <QMimeData>
 
 #include "../core/player.h"
+
+
 
 class QPushButton;
 class QLabel;
@@ -18,14 +22,16 @@ public:
 
 private:
   QPushButton *button;
-  QLabel *label;
+  QLabel *label, *title;
   Item_Pickup item;
-
+  bool mousePressed = false;
 signals:
 
 protected:
   void enterEvent(QEvent *event) override;
   void mousePressEvent(QMouseEvent *event) override;
+  void leaveEvent(QEvent *event) override;
+
 };
 
 #endif // ITEM_SLOT_H

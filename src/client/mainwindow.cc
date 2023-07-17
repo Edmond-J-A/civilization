@@ -487,9 +487,3 @@ std::map<Point, int> MainWindow::GetDecorate(Point left_top, Point right_down)
   return res;
 }
 
-void MainWindow::on_abc_clicked()
-{
-
-  Item Wood(1, "wood", DEFAULT_MAX_STACK, "./res/game/items/1-wood.png");
-  this->me->PickUp(Item_Pickup(Wood, 10));
-}

@@ -6,10 +6,10 @@
 ItemSlot::ItemSlot(QWidget *parent)
     : QWidget(parent)
 {
-  setFixedSize(64, 64);
+  setFixedSize(64, 74);
 
   button = new QPushButton(this);
-  button->setStyleSheet("background-color: rgb(255, 255, 255,125);");
+  button->setStyleSheet("background-color: rgb(255, 255, 255,0);");
   button->setFixedSize(64, 64);
 
   label = new QLabel(this);
@@ -17,12 +17,26 @@ ItemSlot::ItemSlot(QWidget *parent)
   label->setStyleSheet("background-color: rgb(255, 255, 255,0);"
                        "font: 500 18pt m5x7");
   label->move(37, 37);
+  label->setAlignment(Qt::AlignCenter);
+  title = new QLabel(this);
+  title->setFixedSize(64, 20);
+  title->setStyleSheet("background-color: rgb(255, 255, 255,0);"
+                       "font: 500 18pt m5x7");
+  title->setText(QString::fromStdString(this->item.item.GetName()));
+  title->move(0,54 );
+  title->setAlignment(Qt::AlignCenter);
+
+  setAcceptDrops(true);
 }
 
 void ItemSlot::enterEvent(QEvent *event)
 {
-  /*label->setText(QString::number(label->text().toInt() + 1));
-  QWidget::enterEvent(event);*/
+  title->setText(QString::fromStdString(this->item.item.GetName()));
+}
+
+void ItemSlot::leaveEvent(QEvent *event)
+{
+  title->setText("");
 }
 
 void ItemSlot::mousePressEvent(QMouseEvent *event)
