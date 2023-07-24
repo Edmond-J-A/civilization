@@ -13,11 +13,11 @@ MainWindow::MainWindow(QWidget *parent)
   {
     ItemSlot *is = new ItemSlot(this);
     is->setBaseSize(64, 64);
-    is->setObjectName(QString("bag_toolbar_%1").arg(i));
+    is->setObjectName(QString("bag_col0_%1").arg(i));
     ui->bag_toolbar->addWidget(is);
+    bag_button.push_back(is);
     is->setVisible(false);
-
-    toolbar_bag_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->bag_col1->addWidget(is);
     bag_button.push_back(is);
     is->setVisible(false);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->bag_col2->addWidget(is);
     bag_button.push_back(is);
     is->setVisible(false);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
@@ -45,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->bag_col3->addWidget(is);
     bag_button.push_back(is);
     is->setVisible(false);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
@@ -54,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->bag_col4->addWidget(is);
     bag_button.push_back(is);
     is->setVisible(false);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
@@ -63,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->bag_col5->addWidget(is);
     bag_button.push_back(is);
     is->setVisible(false);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
@@ -71,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
     is->setObjectName(QString("toolbar_%1").arg(i));
     ui->toolbar->addWidget(is);
     toolbar_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
 
   pressTimer = new QTimer(this);
@@ -105,8 +111,9 @@ MainWindow::MainWindow(QWidget *parent)
   p->SetTimerID(startTimer(150));
   p->AddState("idle", "./res/game/c1/c1_idel/c1_idel (%%).png", 1, 8);
   p->AddState("walk", "./res/game/c1/c1_walk/c1_walk (%%).png", 1, 8);
-  Item Wood(1, "wood", DEFAULT_MAX_STACK, "./res/game/items/1-wood.png");
-  p->PickUp(Item_Pickup(Wood, 10));
+
+  p->PickUp(Item_Pickup(itemsList["wood"], 10));
+  toolbar_button[0]->SetItemPickup(Item_Pickup(itemsList["castle"], 1));
 }
 
 MainWindow::~MainWindow()
@@ -116,24 +123,27 @@ MainWindow::~MainWindow()
 
 void MainWindow::timerEvent(QTimerEvent *event)
 {
-  if (event->timerId() == REFRESH)
+  if (isplaying)
   {
-    QPoint globalPos = QCursor::pos();
-    mousePosition = mapFromGlobal(globalPos);
-    repaint();
-  }
-  else if (event->timerId() == building_cursor.GetTimerID())
-  {
-    if (isbuilding)
+    if (event->timerId() == REFRESH)
     {
-      building_cursor.NextFrame();
+      QPoint globalPos = QCursor::pos();
+      mousePosition = mapFromGlobal(globalPos);
+      repaint();
     }
-  }
-  for (auto it = playerList.begin(); it != playerList.end(); it++)
-  {
-    if (event->timerId() == (*it)->GetTimerID())
+    else if (event->timerId() == building_cursor.GetTimerID())
     {
-      (*it)->NextFrame();
+      if (isbuilding)
+      {
+        building_cursor.NextFrame();
+      }
+    }
+    for (auto it = playerList.begin(); it != playerList.end(); it++)
+    {
+      if (event->timerId() == (*it)->GetTimerID())
+      {
+        (*it)->NextFrame();
+      }
     }
   }
 }
@@ -168,8 +178,10 @@ void MainWindow::paintEvent(QPaintEvent *event)
   {
     int b_x = cursor_block_location_x - block_x;
     int b_y = cursor_block_location_y - block_y;
+
     QPixmap *pix_building_cursor = new QPixmap(QString::fromStdString(building_cursor.GetNowFrame()));
     painter.drawPixmap(b_x * BLOCK_SIZE + start_x, b_y * BLOCK_SIZE + start_y, BLOCK_SIZE, BLOCK_SIZE, *pix_building_cursor);
+    delete pix_building_cursor;
   }
 
   // 画装饰
@@ -188,6 +200,29 @@ void MainWindow::paintEvent(QPaintEvent *event)
   // 画玩家(本机)
   QImage *image_this_player = new QImage(QString::fromStdString(player.GetNowFrame()));
   painter.drawPixmap(player.GetLocation().GetX() - left_top_x - BLOCK_SIZE / 2, player.GetLocation().GetY() - left_top_y - BLOCK_SIZE / 2, BLOCK_SIZE, BLOCK_SIZE, QPixmap::fromImage(image_this_player->mirrored(player.GetTowardsHorizontal(), false)));
+
+  //
+
+  QPixmap *pix_bag_background = new QPixmap("./res/game/bag.png");
+  if (isbagopen)
+  {
+
+    painter.drawPixmap(20, 20, 920, 600, *pix_bag_background);
+  }
+
+  QPixmap *pix_item_cursor = new QPixmap(QString::fromStdString(this->Cursor_item.item.GetPath()));
+  if (this->Cursor_item.item.IsValid())
+  {
+    painter.drawPixmap(mousePosition.rx(), mousePosition.ry(), *pix_item_cursor);
+  }
+
+  for (int i = 0; i < 7; ++i)
+  {
+    delete pix_decorate[i]; // 从文件中加载图像
+  }
+  delete image_this_player;
+  delete pix_item_cursor;
+  delete pix_bag_background;
 }
 
 void MainWindow::on_B_set_clicked()
@@ -199,7 +234,7 @@ void MainWindow::on_B_start_clicked()
 {
   ui->stackedWidget->setCurrentIndex(2);
   // ui->stackedWidget->setVisible(0);
-  this->is_playing = true;
+  this->isplaying = true;
 }
 
 void MainWindow::on_B_setreturn_clicked()
@@ -220,6 +255,7 @@ void MainWindow::on_voiceSlider_valueChanged(int value)
 void MainWindow::on_B_pause_clicked()
 {
   // 后期可制作游戏内设置界面
+  isplaying = false;
   ui->stackedWidget->setCurrentIndex(0);
 }
 
@@ -293,15 +329,17 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
   }
   else if (event->key() == Qt::Key_E)
   {
-    ui->bag_background->setVisible(!ui->bag_background->isVisible());
+    isbagopen = !isbagopen;
+    if (!isbagopen)
+    {
+      this->me->PickUp(Cursor_item);
+      Item_Pickup empty;
+      Cursor_item = empty;
+    }
     ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
 
     if (toolbar_button[0]->isVisible())
     {
-      for (int i = 0; i < toolbar_button.size(); i++)
-      {
-        toolbar_bag_button[i]->SetItemPickup(toolbar_button[i]->GetItemPickup());
-      }
       for (int i = 0; i < bag_button.size(); i++)
       {
         bag_button[i]->SetItemPickup(this->me->GetPickup(i));
@@ -311,7 +349,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
       for (int i = 0; i < toolbar_button.size(); i++)
       {
-        toolbar_button[i]->SetItemPickup(toolbar_bag_button[i]->GetItemPickup());
+        toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
       }
     }
 
@@ -322,10 +360,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     for (int i = 0; i < toolbar_button.size(); i++)
     {
       toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
-    }
-    for (int i = 0; i < toolbar_bag_button.size(); i++)
-    {
-      toolbar_bag_button[i]->setVisible(!toolbar_bag_button[i]->isVisible());
     }
   }
   else
@@ -357,6 +391,9 @@ void MainWindow::Init()
     int y = BLOCK_SIZE + rand() % (BLOCK_SIZE * MAP_HEIGHT - 2 * BLOCK_SIZE);
     this->decorates.insert(std::pair<Point, int>(Point(x, y), rand() % 7));
   }
+
+  // item初始化
+  this->itemsList = createItemMapFromFile();
 }
 
 void MainWindow::SetPlayer(Player *p)
@@ -487,3 +524,62 @@ std::map<Point, int> MainWindow::GetDecorate(Point left_top, Point right_down)
   return res;
 }
 
+std::map<std::string, Item> MainWindow::createItemMapFromFile()
+{
+  std::map<std::string, Item> itemMap;
+
+  std::ifstream file("./res/items.txt");
+  if (!file.is_open())
+  {
+    std::cerr << "Failed to open file " << std::endl;
+    return itemMap;
+  }
+
+  std::string line;
+  while (std::getline(file, line))
+  {
+    std::istringstream iss(line);
+    std::string name;
+    int ID, maxStack;
+    double durability = -1;
+
+    if (iss >> ID >> name >> maxStack >> durability)
+    {
+      std::string path = "./res/game/items/" + std::to_string(ID) + "-" + name + ".png";
+      Item item(ID, name, maxStack, path, durability);
+      itemMap[name] = item;
+    }
+    else
+    {
+      std::cerr << "Invalid item data: " << line << std::endl;
+    }
+  }
+
+  file.close();
+
+  return itemMap;
+}
+
+void MainWindow::onItemClicked(Item_Pickup item)
+{
+  for (int i = 0; i < toolbar_button.size(); i++)
+  {
+    if (toolbar_button[i]->GetPressed())
+    {
+      toolbar_button[i]->SetItemPickup(Cursor_item);
+      Cursor_item = item;
+      return;
+    }
+  }
+  for (int i = 0; i < bag_button.size(); i++)
+  {
+    if (bag_button[i]->GetPressed())
+    {
+      this->me->SetBag(i, Cursor_item);
+      bag_button[i]->SetItemPickup(Cursor_item);
+      Cursor_item = item;
+      return;
+    }
+  }
+  QMessageBox::information(this, "", QString::fromStdString(item.item.GetName()));
+}

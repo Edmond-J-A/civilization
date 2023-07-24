@@ -44,3 +44,8 @@ void Player::PickUp(Item_Pickup itm)
     }
   }
 }
+
+void Player::SetBag(int i,Item_Pickup item)
+{
+  this->bag[i]=item;
+}

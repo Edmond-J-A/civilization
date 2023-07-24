@@ -49,7 +49,7 @@
     <bool>true</bool>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="page_1">
     <widget class="QLabel" name="start_movie">
@@ -380,26 +380,6 @@ image: url(&quot;./res/start/check_box_checked.png&quot;);
       </size>
      </property>
     </widget>
-    <widget class="QLabel" name="bag_background">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>20</y>
-       <width>920</width>
-       <height>600</height>
-      </rect>
-     </property>
-     <property name="visible">
-      <bool>false</bool>
-     </property>
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"> background-color: rgb(255, 255, 255,0);
-background-image: url(&quot;./res/game/bag.png&quot;);</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="toolbar_background">
      <property name="geometry">
       <rect>
@@ -422,8 +402,8 @@ background-image: url(&quot;./res/game/toolbar.png&quot;);</string>
       <rect>
        <x>80</x>
        <y>80</y>
-       <width>800</width>
-       <height>64</height>
+       <width>801</width>
+       <height>71</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="bag_toolbar">
@@ -437,8 +417,8 @@ background-image: url(&quot;./res/game/toolbar.png&quot;);</string>
       <rect>
        <x>80</x>
        <y>570</y>
-       <width>800</width>
-       <height>64</height>
+       <width>801</width>
+       <height>71</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="toolbar">

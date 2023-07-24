@@ -5,7 +5,7 @@
 #include "animation.h"
 #include "item.h"
 
-#define BAG_VOLUME 50
+#define BAG_VOLUME 60
 #define BAG_COL 10
 
 struct Item_Pickup
@@ -31,6 +31,7 @@ public:
   void Move(Point p);
   void PickUp(Item_Pickup i);
   Item_Pickup GetPickup(int i) { return this->bag[i]; }
+  void SetBag(int i,Item_Pickup item);
 };
 
 #endif

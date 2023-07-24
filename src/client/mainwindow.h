@@ -6,12 +6,15 @@
 #include <map>
 #include <ctime>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 #include <QMainWindow>
 #include <QPainter>
 #include <QMovie>
 #include <QDebug>
-#include <QMessageBox>
+
 #include <QMediaPlaylist>
 #include <QMediaPlayer>
 #include <QMouseEvent>
@@ -19,6 +22,7 @@
 
 #include "../core/construct.h"
 #include "../core/player.h"
+
 #include "item_slot.h"
 
 #define DEFUALT_WIDTH 960
@@ -58,6 +62,7 @@ public:
   Construct *GetConstruct(int x, int y);
   void PlayerMove(int playerID, int direction);
   bool Block(Point p1, Point p2);
+  std::map<std::string, Item> createItemMapFromFile();
 
 private:
   Ui::MainWindow *ui;
@@ -68,17 +73,19 @@ private:
   std::map<Point, int> decorates;
   int map_x_min = 0, map_y_min = 0, map_x_max = 0, map_y_max = 0;
   int REFRESH;
-  bool is_playing = false;
+  bool isplaying = false;
   QMediaPlayer *mediaPlayer;
   QMediaPlaylist *playlist;
   QPoint mousePosition;
-  bool isbuilding = false;
+  bool isbuilding = false, isbagopen = false;
   int current_build_cursor_frame = 0;
   int ANIMATION_TIME;
   Animation building_cursor;
   QTimer *pressTimer;
-  std::vector<ItemSlot *> toolbar_button,bag_button,toolbar_bag_button;
-
+  std::vector<ItemSlot *> toolbar_button, bag_button;
+  std::map<std::string, Item> itemsList;
+  Item_Pickup Cursor_item;
+  
 private slots:
   void on_B_set_clicked();
   void on_B_start_clicked();
@@ -87,6 +94,7 @@ private slots:
   void on_voiceSlider_valueChanged(int value);
   void on_B_pause_clicked();
   void on_voice_check_stateChanged(int state);
+  void onItemClicked(Item_Pickup item);
 };
 
 #endif // MAINWINDOW_H
