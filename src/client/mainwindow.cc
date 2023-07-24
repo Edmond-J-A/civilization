@@ -113,6 +113,12 @@ MainWindow::MainWindow(QWidget *parent)
   p->AddState("walk", "./res/game/c1/c1_walk/c1_walk (%%).png", 1, 8);
 
   p->PickUp(Item_Pickup(itemsList["wood"], 10));
+  p->PickUp(Item_Pickup(itemsList["wood"], 10));
+  p->PickUp(Item_Pickup(itemsList["wood"], 10));
+  p->PickUp(Item_Pickup(itemsList["wood"], 10));
+  p->PickUp(Item_Pickup(itemsList["wood"], 10));
+  p->PickUp(Item_Pickup(itemsList["wood"], 10));
+  p->PickUp(Item_Pickup(itemsList["wood"], 10));
   toolbar_button[0]->SetItemPickup(Item_Pickup(itemsList["castle"], 1));
 }
 
@@ -566,6 +572,15 @@ void MainWindow::onItemClicked(Item_Pickup item)
   {
     if (toolbar_button[i]->GetPressed())
     {
+      if (item.item.GetName() == Cursor_item.item.GetName())
+      {
+        Cursor_item.number += item.number;
+        if (Cursor_item.number > Cursor_item.item.GetMax())
+        {
+          item.number = Cursor_item.number - Cursor_item.item.GetMax();
+          Cursor_item.number = Cursor_item.item.GetMax();
+        }
+      }
       toolbar_button[i]->SetItemPickup(Cursor_item);
       Cursor_item = item;
       return;
@@ -575,6 +590,15 @@ void MainWindow::onItemClicked(Item_Pickup item)
   {
     if (bag_button[i]->GetPressed())
     {
+      if (item.item.GetName() == Cursor_item.item.GetName())
+      {
+        Cursor_item.number += item.number;
+        if (Cursor_item.number > Cursor_item.item.GetMax())
+        {
+          item.number = Cursor_item.number - Cursor_item.item.GetMax();
+          Cursor_item.number = Cursor_item.item.GetMax();
+        }
+      }
       this->me->SetBag(i, Cursor_item);
       bag_button[i]->SetItemPickup(Cursor_item);
       Cursor_item = item;
