@@ -18,13 +18,17 @@ private:
   QPushButton *button;
   QLabel *label, *title;
   Item_Pickup item;
-  bool mousePressed = false;
+  bool mousePressed = false, isSelected = false;
 
 public:
   explicit ItemSlot(QWidget *parent = nullptr);
   void SetItemPickup(Item_Pickup _item);
   Item_Pickup GetItemPickup();
   bool GetPressed() { return mousePressed; }
+  bool GetSelected() { return isSelected; }
+  void SetSelected(bool state) { this->isSelected = state; }
+  void SetPressed(bool state) { this->mousePressed = state; }
+
 signals:
   void itemClicked(Item_Pickup item);
 

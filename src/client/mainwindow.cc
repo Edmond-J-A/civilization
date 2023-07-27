@@ -139,10 +139,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
     }
     else if (event->timerId() == building_cursor.GetTimerID())
     {
-      if (isbuilding)
-      {
-        building_cursor.NextFrame();
-      }
+      building_cursor.NextFrame();
     }
     for (auto it = playerList.begin(); it != playerList.end(); it++)
     {
@@ -177,19 +174,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
     }
   }
 
-  // 画建筑选框
-  int cursor_block_location_x = (mousePosition.rx() + left_top_x) / BLOCK_SIZE;
-  int cursor_block_location_y = (mousePosition.ry() + left_top_y) / BLOCK_SIZE;
-  if (isbuilding && abs(player_block_location_x - cursor_block_location_x) < 5 && abs(player_block_location_y - cursor_block_location_y) < 5)
-  {
-    int b_x = cursor_block_location_x - block_x;
-    int b_y = cursor_block_location_y - block_y;
-
-    QPixmap *pix_building_cursor = new QPixmap(QString::fromStdString(building_cursor.GetNowFrame()));
-    painter.drawPixmap(b_x * BLOCK_SIZE + start_x, b_y * BLOCK_SIZE + start_y, BLOCK_SIZE, BLOCK_SIZE, *pix_building_cursor);
-    delete pix_building_cursor;
-  }
-
   // 画装饰
   QPixmap *pix_decorate[7];
   for (int i = 0; i < 7; ++i)
@@ -207,15 +191,39 @@ void MainWindow::paintEvent(QPaintEvent *event)
   QImage *image_this_player = new QImage(QString::fromStdString(player.GetNowFrame()));
   painter.drawPixmap(player.GetLocation().GetX() - left_top_x - BLOCK_SIZE / 2, player.GetLocation().GetY() - left_top_y - BLOCK_SIZE / 2, BLOCK_SIZE, BLOCK_SIZE, QPixmap::fromImage(image_this_player->mirrored(player.GetTowardsHorizontal(), false)));
 
-  //
+  // 画建筑选框
+  int cursor_block_location_x = (mousePosition.rx() + left_top_x) / BLOCK_SIZE;
+  int cursor_block_location_y = (mousePosition.ry() + left_top_y) / BLOCK_SIZE;
+  if (isbuilding && abs(player_block_location_x - cursor_block_location_x) < 5 && abs(player_block_location_y - cursor_block_location_y) < 5)
+  {
+    int b_x = cursor_block_location_x - block_x;
+    int b_y = cursor_block_location_y - block_y;
+
+    QPixmap *pix_building_cursor = new QPixmap(QString::fromStdString(building_cursor.GetNowFrame()));
+    painter.drawPixmap(b_x * BLOCK_SIZE + start_x, b_y * BLOCK_SIZE + start_y, BLOCK_SIZE, BLOCK_SIZE, *pix_building_cursor);
+    delete pix_building_cursor;
+  }
+
+  // 画工具栏选框
+  for (int i = 0; i < toolbar_button.size(); i++)
+  {
+    if (toolbar_button[i]->GetSelected())
+    {
+      QPixmap *pix_building_cursor = new QPixmap(QString::fromStdString(building_cursor.GetNowFrame()));
+      painter.drawPixmap(80 + i * 80, 560, 80, 80, *pix_building_cursor);
+      break;
+    }
+  }
+
+  // 画背包面板
 
   QPixmap *pix_bag_background = new QPixmap("./res/game/bag.png");
   if (isbagopen)
   {
-
     painter.drawPixmap(20, 20, 920, 600, *pix_bag_background);
   }
 
+  // 画鼠标选中item
   QPixmap *pix_item_cursor = new QPixmap(QString::fromStdString(this->Cursor_item.item.GetPath()));
   if (this->Cursor_item.item.IsValid())
   {
@@ -224,7 +232,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
   for (int i = 0; i < 7; ++i)
   {
-    delete pix_decorate[i]; // 从文件中加载图像
+    delete pix_decorate[i];
   }
   delete image_this_player;
   delete pix_item_cursor;
@@ -568,24 +576,6 @@ std::map<std::string, Item> MainWindow::createItemMapFromFile()
 
 void MainWindow::onItemClicked(Item_Pickup item)
 {
-  for (int i = 0; i < toolbar_button.size(); i++)
-  {
-    if (toolbar_button[i]->GetPressed())
-    {
-      if (item.item.GetName() == Cursor_item.item.GetName())
-      {
-        Cursor_item.number += item.number;
-        if (Cursor_item.number > Cursor_item.item.GetMax())
-        {
-          item.number = Cursor_item.number - Cursor_item.item.GetMax();
-          Cursor_item.number = Cursor_item.item.GetMax();
-        }
-      }
-      toolbar_button[i]->SetItemPickup(Cursor_item);
-      Cursor_item = item;
-      return;
-    }
-  }
   for (int i = 0; i < bag_button.size(); i++)
   {
     if (bag_button[i]->GetPressed())
@@ -605,5 +595,15 @@ void MainWindow::onItemClicked(Item_Pickup item)
       return;
     }
   }
-  QMessageBox::information(this, "", QString::fromStdString(item.item.GetName()));
+
+  for (int i = 0; i < toolbar_button.size(); i++)
+  {
+    if (toolbar_button[i]->GetPressed())
+    {
+      toolbar_button[i]->SetSelected(!(toolbar_button[i]->GetSelected()));
+      toolbar_button[i]->SetPressed(false);
+      continue;
+    }
+    toolbar_button[i]->SetSelected(false);
+  }
 }
