@@ -287,98 +287,117 @@ void MainWindow::on_voice_check_stateChanged(int state)
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
-  if (event->key() == Qt::Key_W || event->key() == Qt::Key_A || event->key() == Qt::Key_D || event->key() == Qt::Key_S)
+  if (isplaying)
   {
-    if (!pressTimer->isActive())
+    if (event->key() == Qt::Key_W || event->key() == Qt::Key_A || event->key() == Qt::Key_D || event->key() == Qt::Key_S)
     {
-      pressTimer->start(100);
+      if (!pressTimer->isActive())
+      {
+        pressTimer->start(100);
+      }
     }
-  }
-  else
-  {
+    else
+    {
+    }
   }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-  if (event->key() == Qt::Key_W)
+  if (isplaying)
   {
-    if (pressTimer->isActive())
+    if (event->key() == Qt::Key_W)
     {
-      pressTimer->stop();
+      if (pressTimer->isActive())
+      {
+        pressTimer->stop();
+      }
+      this->me->SetState("walk");
+      PlayerMove(this->me->GetID(), UP);
     }
-    this->me->SetState("walk");
-    PlayerMove(this->me->GetID(), UP);
-  }
-  else if (event->key() == Qt::Key_S)
-  {
-    if (pressTimer->isActive())
+    else if (event->key() == Qt::Key_S)
     {
-      pressTimer->stop();
+      if (pressTimer->isActive())
+      {
+        pressTimer->stop();
+      }
+      this->me->SetState("walk");
+      PlayerMove(this->me->GetID(), DOWN);
     }
-    this->me->SetState("walk");
-    PlayerMove(this->me->GetID(), DOWN);
-  }
-  else if (event->key() == Qt::Key_A)
-  {
-    if (pressTimer->isActive())
+    else if (event->key() == Qt::Key_A)
     {
-      pressTimer->stop();
+      if (pressTimer->isActive())
+      {
+        pressTimer->stop();
+      }
+      this->me->SetState("walk");
+      PlayerMove(this->me->GetID(), LEFT);
     }
-    this->me->SetState("walk");
-    PlayerMove(this->me->GetID(), LEFT);
-  }
-  else if (event->key() == Qt::Key_D)
-  {
-    if (pressTimer->isActive())
+    else if (event->key() == Qt::Key_D)
     {
-      pressTimer->stop();
+      if (pressTimer->isActive())
+      {
+        pressTimer->stop();
+      }
+      this->me->SetState("walk");
+      PlayerMove(this->me->GetID(), RIGHT);
     }
-    this->me->SetState("walk");
-    PlayerMove(this->me->GetID(), RIGHT);
-  }
-  else if (event->key() == Qt::Key_B)
-  {
-    this->isbuilding = !this->isbuilding;
-  }
-  else if (event->key() == Qt::Key_E)
-  {
-    isbagopen = !isbagopen;
-    if (!isbagopen)
+    else if (event->key() == Qt::Key_B)
     {
-      this->me->PickUp(Cursor_item);
-      Item_Pickup empty;
-      Cursor_item = empty;
+      this->isbuilding = !this->isbuilding;
     }
-    ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
+    else if (event->key() == Qt::Key_E)
+    {
+      isbagopen = !isbagopen;
+      if (!isbagopen)
+      {
+        this->me->PickUp(Cursor_item);
+        Item_Pickup empty;
+        Cursor_item = empty;
+      }
+      ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
 
-    if (toolbar_button[0]->isVisible())
-    {
+      if (toolbar_button[0]->isVisible())
+      {
+        for (int i = 0; i < bag_button.size(); i++)
+        {
+          bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+        }
+      }
+      else
+      {
+        for (int i = 0; i < toolbar_button.size(); i++)
+        {
+          toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
+        }
+      }
+
       for (int i = 0; i < bag_button.size(); i++)
       {
-        bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+        bag_button[i]->setVisible(!bag_button[i]->isVisible());
+      }
+      for (int i = 0; i < toolbar_button.size(); i++)
+      {
+        toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
+      }
+    }
+    else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
+    {
+      for (int i = 0; i < toolbar_button.size(); i++)
+      {
+        int keyIndex = event->key() - Qt::Key_0 - 1 >= 0 ? event->key() - Qt::Key_0 - 1 : 9;
+        if (i == keyIndex)
+        {
+          toolbar_button[i]->SetSelected(!toolbar_button[i]->GetSelected());
+          continue;
+        }
+        toolbar_button[i]->SetSelected(false);
       }
     }
     else
     {
-      for (int i = 0; i < toolbar_button.size(); i++)
-      {
-        toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
-      }
+      // 处理其他按键事件
     }
-
-    for (int i = 0; i < bag_button.size(); i++)
-    {
-      bag_button[i]->setVisible(!bag_button[i]->isVisible());
-    }
-    for (int i = 0; i < toolbar_button.size(); i++)
-    {
-      toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
-    }
-  }
-  else
-  {
-    // 处理其他按键事件
   }
 }
 
