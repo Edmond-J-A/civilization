@@ -54,6 +54,7 @@ public:
   void keyPressEvent(QKeyEvent *event);
   void keyReleaseEvent(QKeyEvent *event);
   void handleDelayedKeyRelease();
+  void mousePressEvent(QMouseEvent *event);
 
   void Init();
   std::map<Point, int> GetDecorate(Point left_top, Point right_down);
@@ -66,7 +67,7 @@ public:
 
 private:
   Ui::MainWindow *ui;
-  Construct *gameMap[MAP_WIDTH][MAP_HEIGHT];
+  std::vector<std::vector<Construct *>> gameMap;
   std::list<Player *> playerList;
   int myID = NO_PLAYER;
   Player *me = NULL;
@@ -85,7 +86,7 @@ private:
   std::vector<ItemSlot *> toolbar_button, bag_button;
   std::map<std::string, Item> itemsList;
   Item_Pickup Cursor_item;
-  
+
 private slots:
   void on_B_set_clicked();
   void on_B_start_clicked();

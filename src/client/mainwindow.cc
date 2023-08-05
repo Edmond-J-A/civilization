@@ -119,7 +119,7 @@ MainWindow::MainWindow(QWidget *parent)
   p->PickUp(Item_Pickup(itemsList["wood"], 10));
   p->PickUp(Item_Pickup(itemsList["wood"], 10));
   p->PickUp(Item_Pickup(itemsList["wood"], 10));
-  toolbar_button[0]->SetItemPickup(Item_Pickup(itemsList["castle"], 1));
+  p->PickUp(Item_Pickup(itemsList["castle"], 1));
 }
 
 MainWindow::~MainWindow()
@@ -157,8 +157,8 @@ void MainWindow::paintEvent(QPaintEvent *event)
   Point player_location = player.GetLocation();
   int left_top_x = player_location.GetX() - DEFUALT_WIDTH / 2;
   int left_top_y = player_location.GetY() - DEFUALT_HEIGHT / 2;
-  int block_x = left_top_x / BLOCK_SIZE;
-  int block_y = left_top_y / BLOCK_SIZE;
+  int block_x = left_top_x / BLOCK_SIZE; // 左上第一个格子横坐标序号
+  int block_y = left_top_y / BLOCK_SIZE; // 左上第一个格子纵坐标序号
   int start_x = -(left_top_x % BLOCK_SIZE);
   int start_y = -(left_top_y % BLOCK_SIZE);
   int player_block_location_x = player_location.GetX() / BLOCK_SIZE;
@@ -187,9 +187,25 @@ void MainWindow::paintEvent(QPaintEvent *event)
     painter.drawPixmap((*i).first.GetX() - left_top_x, (*i).first.GetY() - left_top_y, DECORATE_SIZE * 2, DECORATE_SIZE * 2, *pix_decorate[(*i).second]);
   }
 
-  // 画玩家(本机)
+  // 画建筑
   QImage *image_this_player = new QImage(QString::fromStdString(player.GetNowFrame()));
-  painter.drawPixmap(player.GetLocation().GetX() - left_top_x - BLOCK_SIZE / 2, player.GetLocation().GetY() - left_top_y - BLOCK_SIZE / 2, BLOCK_SIZE, BLOCK_SIZE, QPixmap::fromImage(image_this_player->mirrored(player.GetTowardsHorizontal(), false)));
+  for (int i = 0; i <= DEFUALT_WIDTH / BLOCK_SIZE; i++)
+  {
+    for (int j = 0; j <= DEFUALT_HEIGHT / BLOCK_SIZE; j++)
+    {
+      if (gameMap[i + block_x][j + block_y] != NULL)
+      {
+        QPixmap tmp(QString::fromStdString(gameMap[i + block_x][j + block_y]->GetPath()));
+        painter.drawPixmap(start_x + i * BLOCK_SIZE, start_y + j * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, tmp);
+      }
+      if (i == DEFUALT_WIDTH / BLOCK_SIZE / 2 + 2 && j == DEFUALT_HEIGHT / BLOCK_SIZE / 2 + 2)
+      {
+        // 画玩家(本机)
+
+        painter.drawPixmap(player.GetLocation().GetX() - left_top_x - BLOCK_SIZE / 2, player.GetLocation().GetY() - left_top_y - BLOCK_SIZE / 2, BLOCK_SIZE, BLOCK_SIZE, QPixmap::fromImage(image_this_player->mirrored(player.GetTowardsHorizontal(), false)));
+      }
+    }
+  }
 
   // 画建筑选框
   int cursor_block_location_x = (mousePosition.rx() + left_top_x) / BLOCK_SIZE;
@@ -409,6 +425,11 @@ void MainWindow::handleDelayedKeyRelease()
 void MainWindow::Init()
 {
   // 地图初始化
+  gameMap.resize(MAP_WIDTH);
+  for (int i = 0; i < MAP_WIDTH; i++)
+  {
+    gameMap[i].resize(MAP_HEIGHT);
+  }
 
   // 坐标范围初始化
   map_x_max = MAP_WIDTH * BLOCK_SIZE;
@@ -624,5 +645,40 @@ void MainWindow::onItemClicked(Item_Pickup item)
       continue;
     }
     toolbar_button[i]->SetSelected(false);
+  }
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+  if (isplaying)
+  {
+    if (event->button() == Qt::LeftButton)
+    {
+      for (int i = 0; i < toolbar_button.size(); i++)
+      {
+        if (toolbar_button[i]->GetSelected())
+        {
+          Player player = *(this->me);
+          Point player_location = player.GetLocation();
+          int left_top_x = player_location.GetX() - DEFUALT_WIDTH / 2;
+          int left_top_y = player_location.GetY() - DEFUALT_HEIGHT / 2;
+          int player_block_location_x = player_location.GetX() / BLOCK_SIZE;
+          int player_block_location_y = player_location.GetY() / BLOCK_SIZE;
+          int cursor_block_location_x = (mousePosition.rx() + left_top_x) / BLOCK_SIZE;
+          int cursor_block_location_y = (mousePosition.ry() + left_top_y) / BLOCK_SIZE;
+          if (abs(player_block_location_x - cursor_block_location_x) < 5 && abs(player_block_location_y - cursor_block_location_y) < 5)
+          {
+            if (toolbar_button[i]->GetItemPickup().item.Put(this->gameMap, cursor_block_location_x, cursor_block_location_y, this->myID))
+            {
+              Item_Pickup tmp = toolbar_button[i]->GetItemPickup();
+              tmp.UseOne();
+              toolbar_button[i]->SetItemPickup(tmp);
+              this->me->Use(tmp.item.GetName());
+            }
+          }
+          break;
+        }
+      }
+    }
   }
 }

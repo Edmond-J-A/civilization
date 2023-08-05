@@ -71,6 +71,8 @@ void ItemSlot::SetItemPickup(Item_Pickup _item)
     QString style_sheet = "background-color: rgba(255, 255, 255, 0);border-radius: 32px;";
     button->setStyleSheet(style_sheet);
     label->setText("");
+    Item_Pickup i;
+    this->item = i;
     return;
   }
 

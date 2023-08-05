@@ -1,9 +1,12 @@
 #ifndef ITEM_H
 #define ITEM_H
 
+#include <vector>
 #include <iostream>
 
 #define DEFAULT_MAX_STACK 64
+
+class Construct;
 
 class Item
 {
@@ -26,6 +29,6 @@ public:
   bool operator==(const Item &other) { return (this->ID == other.ID && this->name == other.name); }
   bool IsValid() { return ID > 0; }
   std::string GetPath() { return this->path; }
+  bool Put(std::vector<std::vector<Construct *>>& gameMap,int x,int y,int owner);
 };
-
 #endif

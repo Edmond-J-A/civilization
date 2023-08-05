@@ -45,7 +45,24 @@ void Player::PickUp(Item_Pickup itm)
   }
 }
 
-void Player::SetBag(int i,Item_Pickup item)
+void Player::SetBag(int i, Item_Pickup item)
 {
-  this->bag[i]=item;
+  this->bag[i] = item;
+}
+
+void Player::Use(std::string i)
+{
+  for (int j = 0; j < BAG_VOLUME; j++)
+  {
+    if (this->bag[j].item.GetName() == i)
+    {
+      this->bag[j].UseOne();
+      if (this->bag[j].number <= 0)
+      {
+        Item_Pickup it;
+        this->bag[j] = it;
+      }
+      return;
+    }
+  }
 }

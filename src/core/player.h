@@ -14,6 +14,11 @@ struct Item_Pickup
   int number = -1;
   Item_Pickup() : number(-1) {}
   Item_Pickup(const Item &item, int number) : item(item), number(number) {}
+  bool UseOne()
+  {
+    number--;
+    return number == 0;
+  }
 };
 
 class Player : public Creature, public Animation
@@ -31,7 +36,8 @@ public:
   void Move(Point p);
   void PickUp(Item_Pickup i);
   Item_Pickup GetPickup(int i) { return this->bag[i]; }
-  void SetBag(int i,Item_Pickup item);
+  void SetBag(int i, Item_Pickup item);
+  void Use(std::string i);
 };
 
 #endif
