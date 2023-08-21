@@ -11,74 +11,96 @@ MainWindow::MainWindow(QWidget *parent)
   // 太丑了 要优化
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(this);
+    ItemSlot *is = new ItemSlot(64,this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col0_%1").arg(i));
     ui->bag_toolbar->addWidget(is);
     bag_button.push_back(is);
-    is->setVisible(false);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(this);
+    ItemSlot *is = new ItemSlot(64,this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col1_%1").arg(i));
     ui->bag_col1->addWidget(is);
     bag_button.push_back(is);
-    is->setVisible(false);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(this);
+    ItemSlot *is = new ItemSlot(64,this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col2_%1").arg(i));
     ui->bag_col2->addWidget(is);
     bag_button.push_back(is);
-    is->setVisible(false);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(this);
+    ItemSlot *is = new ItemSlot(64,this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col3_%1").arg(i));
     ui->bag_col3->addWidget(is);
     bag_button.push_back(is);
-    is->setVisible(false);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(this);
+    ItemSlot *is = new ItemSlot(64,this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col4_%1").arg(i));
     ui->bag_col4->addWidget(is);
     bag_button.push_back(is);
-    is->setVisible(false);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(this);
+    ItemSlot *is = new ItemSlot(64,this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col5_%1").arg(i));
     ui->bag_col5->addWidget(is);
     bag_button.push_back(is);
-    is->setVisible(false);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(this);
+    ItemSlot *is = new ItemSlot(64,this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("toolbar_%1").arg(i));
     ui->toolbar->addWidget(is);
     toolbar_button.push_back(is);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32,this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_%1").arg(i));
+    ui->chest->addWidget(is);
+    chest_bag_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32,this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_%1").arg(i));
+    ui->chest_2->addWidget(is);
+    chest_bag_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32,this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_%1").arg(i));
+    ui->chest_3->addWidget(is);
+    chest_bag_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
 
+  ui->bag_ui->setVisible(false);
   pressTimer = new QTimer(this);
   pressTimer->setSingleShot(true);
   connect(pressTimer, &QTimer::timeout, this, &handleDelayedKeyRelease);
@@ -233,10 +255,20 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
   // 画背包面板
 
-  QPixmap *pix_bag_background = new QPixmap("./res/game/bag.png");
-  if (isbagopen)
+  if (ui->bag_ui->isVisible())
   {
-    painter.drawPixmap(20, 20, 920, 600, *pix_bag_background);
+    if (ui->bag_ui->currentIndex() == 0)
+    {
+      QPixmap *pix_bag_background = new QPixmap("./res/game/bag.png");
+      painter.drawPixmap(20, 20, 920, 600, *pix_bag_background);
+      delete pix_bag_background;
+    }
+    else if (ui->bag_ui->currentIndex() == 1)
+    {
+      QPixmap *pix_bag_background = new QPixmap("./res/game/chest.png");
+      painter.drawPixmap(20, 20, 920, 600, *pix_bag_background);
+      delete pix_bag_background;
+    }
   }
 
   // 画鼠标选中item
@@ -252,7 +284,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
   }
   delete image_this_player;
   delete pix_item_cursor;
-  delete pix_bag_background;
 }
 
 void MainWindow::on_B_set_clicked()
@@ -364,8 +395,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
     else if (event->key() == Qt::Key_E)
     {
-      isbagopen = !isbagopen;
-      if (!isbagopen)
+      ui->bag_ui->setCurrentIndex(0);
+      ui->bag_ui->setVisible(!ui->bag_ui->isVisible());
+      if (!ui->bag_ui->isVisible())
       {
         this->me->PickUp(Cursor_item);
         Item_Pickup empty;
@@ -387,11 +419,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
           toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
         }
       }
-
-      for (int i = 0; i < bag_button.size(); i++)
-      {
-        bag_button[i]->setVisible(!bag_button[i]->isVisible());
-      }
       for (int i = 0; i < toolbar_button.size(); i++)
       {
         toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
@@ -408,6 +435,22 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
           continue;
         }
         toolbar_button[i]->SetSelected(false);
+      }
+    }
+    else if (event->key() >= Qt::Key_C)
+    {
+      ui->bag_ui->setCurrentIndex(1);
+      ui->bag_ui->setVisible(!ui->bag_ui->isVisible());
+      if (!ui->bag_ui->isVisible())
+      {
+        this->me->PickUp(Cursor_item);
+        Item_Pickup empty;
+        Cursor_item = empty;
+      }
+      ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
+      for (int i = 0; i < toolbar_button.size(); i++)
+      {
+        toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
       }
     }
     else

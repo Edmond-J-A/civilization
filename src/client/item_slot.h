@@ -21,7 +21,7 @@ private:
   bool mousePressed = false, isSelected = false;
 
 public:
-  explicit ItemSlot(QWidget *parent = nullptr);
+  explicit ItemSlot(int size,QWidget *parent = nullptr);
   void SetItemPickup(Item_Pickup _item);
   Item_Pickup GetItemPickup();
   bool GetPressed() { return mousePressed; }

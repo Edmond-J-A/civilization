@@ -78,12 +78,12 @@ private:
   QMediaPlayer *mediaPlayer;
   QMediaPlaylist *playlist;
   QPoint mousePosition;
-  bool isbuilding = false, isbagopen = false;
+  bool isbuilding = false;
   int current_build_cursor_frame = 0;
   int ANIMATION_TIME;
   Animation building_cursor;
   QTimer *pressTimer;
-  std::vector<ItemSlot *> toolbar_button, bag_button;
+  std::vector<ItemSlot *> toolbar_button, bag_button,chest_bag_button;
   std::map<std::string, Item> itemsList;
   Item_Pickup Cursor_item;
 
