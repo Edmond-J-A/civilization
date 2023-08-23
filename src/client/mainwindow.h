@@ -83,7 +83,7 @@ private:
   int ANIMATION_TIME;
   Animation building_cursor;
   QTimer *pressTimer;
-  std::vector<ItemSlot *> toolbar_button, bag_button,chest_bag_button;
+  std::vector<ItemSlot *> toolbar_button, bag_button,chest_bag_button,chest_button;
   std::map<std::string, Item> itemsList;
   Item_Pickup Cursor_item;
 

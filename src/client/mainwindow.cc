@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
   // 太丑了 要优化
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(64,this);
+    ItemSlot *is = new ItemSlot(64, this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col0_%1").arg(i));
     ui->bag_toolbar->addWidget(is);
@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(64,this);
+    ItemSlot *is = new ItemSlot(64, this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col1_%1").arg(i));
     ui->bag_col1->addWidget(is);
@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(64,this);
+    ItemSlot *is = new ItemSlot(64, this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col2_%1").arg(i));
     ui->bag_col2->addWidget(is);
@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(64,this);
+    ItemSlot *is = new ItemSlot(64, this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col3_%1").arg(i));
     ui->bag_col3->addWidget(is);
@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(64,this);
+    ItemSlot *is = new ItemSlot(64, this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col4_%1").arg(i));
     ui->bag_col4->addWidget(is);
@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(64,this);
+    ItemSlot *is = new ItemSlot(64, this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("bag_col5_%1").arg(i));
     ui->bag_col5->addWidget(is);
@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
   for (int i = 0; i < 10; i++)
   {
-    ItemSlot *is = new ItemSlot(64,this);
+    ItemSlot *is = new ItemSlot(64, this);
     is->setBaseSize(64, 64);
     is->setObjectName(QString("toolbar_%1").arg(i));
     ui->toolbar->addWidget(is);
@@ -74,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
   for (int i = 0; i < 20; i++)
   {
-    ItemSlot *is = new ItemSlot(32,this);
+    ItemSlot *is = new ItemSlot(32, this);
     is->setBaseSize(33, 35);
     is->setObjectName(QString("chest_%1").arg(i));
     ui->chest->addWidget(is);
@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
   for (int i = 0; i < 20; i++)
   {
-    ItemSlot *is = new ItemSlot(32,this);
+    ItemSlot *is = new ItemSlot(32, this);
     is->setBaseSize(33, 35);
     is->setObjectName(QString("chest_%1").arg(i));
     ui->chest_2->addWidget(is);
@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent)
   }
   for (int i = 0; i < 20; i++)
   {
-    ItemSlot *is = new ItemSlot(32,this);
+    ItemSlot *is = new ItemSlot(32, this);
     is->setBaseSize(33, 35);
     is->setObjectName(QString("chest_%1").arg(i));
     ui->chest_3->addWidget(is);
@@ -448,6 +448,21 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         Cursor_item = empty;
       }
       ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
+
+      if (toolbar_button[0]->isVisible())
+      {
+        for (int i = 0; i < chest_bag_button.size(); i++)
+        {
+          chest_bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+        }
+      }
+      else
+      {
+        for (int i = 0; i < toolbar_button.size(); i++)
+        {
+          toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
+        }
+      }
       for (int i = 0; i < toolbar_button.size(); i++)
       {
         toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
@@ -679,6 +694,26 @@ void MainWindow::onItemClicked(Item_Pickup item)
     }
   }
 
+  for (int i = 0; i < chest_bag_button.size(); i++)
+  {
+    if (chest_bag_button[i]->GetPressed())
+    {
+      if (item.item.GetName() == Cursor_item.item.GetName())
+      {
+        Cursor_item.number += item.number;
+        if (Cursor_item.number > Cursor_item.item.GetMax())
+        {
+          item.number = Cursor_item.number - Cursor_item.item.GetMax();
+          Cursor_item.number = Cursor_item.item.GetMax();
+        }
+      }
+      this->me->SetBag(i, Cursor_item);
+      chest_bag_button[i]->SetItemPickup(Cursor_item);
+      Cursor_item = item;
+      return;
+    }
+  }
+
   for (int i = 0; i < toolbar_button.size(); i++)
   {
     if (toolbar_button[i]->GetPressed())
@@ -697,18 +732,20 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
   {
     if (event->button() == Qt::LeftButton)
     {
+      Player player = *(this->me);
+      Point player_location = player.GetLocation();
+      int left_top_x = player_location.GetX() - DEFUALT_WIDTH / 2;
+      int left_top_y = player_location.GetY() - DEFUALT_HEIGHT / 2;
+      int cursor_block_location_x = (mousePosition.rx() + left_top_x) / BLOCK_SIZE;
+      int cursor_block_location_y = (mousePosition.ry() + left_top_y) / BLOCK_SIZE;
+      int player_block_location_x = player_location.GetX() / BLOCK_SIZE;
+      int player_block_location_y = player_location.GetY() / BLOCK_SIZE;
       for (int i = 0; i < toolbar_button.size(); i++)
       {
+
         if (toolbar_button[i]->GetSelected())
         {
-          Player player = *(this->me);
-          Point player_location = player.GetLocation();
-          int left_top_x = player_location.GetX() - DEFUALT_WIDTH / 2;
-          int left_top_y = player_location.GetY() - DEFUALT_HEIGHT / 2;
-          int player_block_location_x = player_location.GetX() / BLOCK_SIZE;
-          int player_block_location_y = player_location.GetY() / BLOCK_SIZE;
-          int cursor_block_location_x = (mousePosition.rx() + left_top_x) / BLOCK_SIZE;
-          int cursor_block_location_y = (mousePosition.ry() + left_top_y) / BLOCK_SIZE;
+
           if (abs(player_block_location_x - cursor_block_location_x) < 5 && abs(player_block_location_y - cursor_block_location_y) < 5)
           {
             if (toolbar_button[i]->GetItemPickup().item.Put(this->gameMap, cursor_block_location_x, cursor_block_location_y, this->myID))
@@ -719,7 +756,17 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
               this->me->Use(tmp.item.GetName());
             }
           }
-          break;
+          return;
+        }
+      }
+      if (abs(player_block_location_x - cursor_block_location_x) < 5 && abs(player_block_location_y - cursor_block_location_y) < 5)
+      {
+        if (toolbar_button[i]->GetItemPickup().item.Put(this->gameMap, cursor_block_location_x, cursor_block_location_y, this->myID))
+        {
+          Item_Pickup tmp = toolbar_button[i]->GetItemPickup();
+          tmp.UseOne();
+          toolbar_button[i]->SetItemPickup(tmp);
+          this->me->Use(tmp.item.GetName());
         }
       }
     }

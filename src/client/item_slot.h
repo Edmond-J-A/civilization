@@ -19,7 +19,7 @@ private:
   QLabel *label, *title;
   Item_Pickup item;
   bool mousePressed = false, isSelected = false;
-
+  int button_size;
 public:
   explicit ItemSlot(int size,QWidget *parent = nullptr);
   void SetItemPickup(Item_Pickup _item);

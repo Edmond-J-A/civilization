@@ -12,36 +12,41 @@ ItemSlot::ItemSlot(int size, QWidget *parent)
   button->setObjectName("button");
   connect(button, &QPushButton::clicked, this, &ItemSlot::on_button_clicked);
   label = new QLabel(this);
-  label->setStyleSheet("background-color: rgb(255, 255, 255,0);"
-                       "font: 500 18pt m5x7");
+
   label->setAlignment(Qt::AlignCenter);
   title = new QLabel(this);
-  title->setStyleSheet("background-color: rgb(255, 255, 255,0);"
-                       "font: 500 18pt m5x7");
+
   title->setText(QString::fromStdString(this->item.item.GetName()));
   title->setAlignment(Qt::AlignCenter);
 
   if (size == 64)
   {
     button->setStyleSheet("background-color: rgb(255, 255, 255,0);"
-                        "border-radius: 32px;");
+                          "border-radius: 32px;");
     setFixedSize(64, 74);
     button->setFixedSize(64, 64);
     label->setFixedSize(20, 20);
     label->move(37, 37);
     title->setFixedSize(64, 20);
     title->move(0, 54);
+    title->setStyleSheet("background-color: rgb(255, 255, 255,0);"
+                         "font: 500 18pt m5x7");
+    label->setStyleSheet("background-color: rgb(255, 255, 255,0);"
+                         "font: 500 18pt m5x7");
   }
   else if (size == 32)
   {
     button->setStyleSheet("background-color: rgb(255, 255, 255,0);"
-                        "border-radius: 16px;");
+                          "border-radius: 16px;");
     setFixedSize(33, 35);
     button->setFixedSize(33, 33);
-    label->setFixedSize(10, 10);
-    label->move(18, 18);
+    label->setFixedSize(16, 16);
+    label->move(19, 20);
     title->setFixedSize(32, 10);
     title->move(0, 27);
+    title->setVisible(false);
+    label->setStyleSheet("background-color: rgb(255, 255, 255,0);"
+                         "font: 500 16pt m5x7");
   }
   setAcceptDrops(true);
 }
@@ -51,7 +56,7 @@ void ItemSlot::enterEvent(QEvent *event)
   title->setText(QString::fromStdString(this->item.item.GetName()));
   QString style = button->styleSheet();
   QString background_image = "image: url(" + QString::fromStdString(item.item.GetPath()) + ");";
-  QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: "+QString::number(button->width()/2)+"px;" + "border: 3px solid gold;";
+  QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: " + QString::number(button->width() / 2) + "px;" + "border: 3px solid gold;";
   button->setStyleSheet(style_sheet);
 }
 
@@ -59,7 +64,7 @@ void ItemSlot::leaveEvent(QEvent *event)
 {
   title->setText("");
   QString background_image = "image: url(" + QString::fromStdString(item.item.GetPath()) + ");";
-  QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: "+QString::number(button->width()/2)+"px;";
+  QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: " + QString::number(button->width() / 2) + "px;";
   button->setStyleSheet(style_sheet);
 }
 
@@ -83,7 +88,7 @@ void ItemSlot::SetItemPickup(Item_Pickup _item)
   this->item = _item;
   if (_item.number <= 0)
   {
-    QString style_sheet = "background-color: rgba(255, 255, 255, 0);border-radius: "+QString::number(button->width()/2)+"px;";
+    QString style_sheet = "background-color: rgba(255, 255, 255, 0);border-radius: " + QString::number(button->width() / 2) + "px;";
     button->setStyleSheet(style_sheet);
     label->setText("");
     Item_Pickup i;
@@ -92,7 +97,7 @@ void ItemSlot::SetItemPickup(Item_Pickup _item)
   }
 
   QString background_image = "image: url(" + QString::fromStdString(_item.item.GetPath()) + ");";
-  QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: "+QString::number(button->width()/2)+"px;";
+  QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: " + QString::number(button->width() / 2) + "px;";
   button->setStyleSheet(style_sheet);
   label->setText(QString::number(_item.number));
 }
