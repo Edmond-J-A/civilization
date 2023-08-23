@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
   {
     ItemSlot *is = new ItemSlot(32, this);
     is->setBaseSize(33, 35);
-    is->setObjectName(QString("chest_%1").arg(i));
+    is->setObjectName(QString("chest_2_%1").arg(i));
     ui->chest_2->addWidget(is);
     chest_bag_button.push_back(is);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
@@ -94,9 +94,81 @@ MainWindow::MainWindow(QWidget *parent)
   {
     ItemSlot *is = new ItemSlot(32, this);
     is->setBaseSize(33, 35);
-    is->setObjectName(QString("chest_%1").arg(i));
+    is->setObjectName(QString("chest_3_%1").arg(i));
     ui->chest_3->addWidget(is);
     chest_bag_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_4_%1").arg(i));
+    ui->chest_4->addWidget(is);
+    chest_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_5_%1").arg(i));
+    ui->chest_5->addWidget(is);
+    chest_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_6_%1").arg(i));
+    ui->chest_6->addWidget(is);
+    chest_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_8_%1").arg(i));
+    ui->chest_8->addWidget(is);
+    chest_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_9_%1").arg(i));
+    ui->chest_9->addWidget(is);
+    chest_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_10_%1").arg(i));
+    ui->chest_10->addWidget(is);
+    chest_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_11_%1").arg(i));
+    ui->chest_11->addWidget(is);
+    chest_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("chest_12_%1").arg(i));
+    ui->chest_12->addWidget(is);
+    chest_button.push_back(is);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
 
@@ -757,16 +829,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             }
           }
           return;
-        }
-      }
-      if (abs(player_block_location_x - cursor_block_location_x) < 5 && abs(player_block_location_y - cursor_block_location_y) < 5)
-      {
-        if (toolbar_button[i]->GetItemPickup().item.Put(this->gameMap, cursor_block_location_x, cursor_block_location_y, this->myID))
-        {
-          Item_Pickup tmp = toolbar_button[i]->GetItemPickup();
-          tmp.UseOne();
-          toolbar_button[i]->SetItemPickup(tmp);
-          this->me->Use(tmp.item.GetName());
         }
       }
     }
