@@ -1,4 +1,4 @@
-#include "item.h"
+#include "player.h"
 #include "construct.h"
 
 Construct::Construct()
@@ -22,7 +22,9 @@ Construct::Construct(std::string _name, int owner, int _x, int _y)
     y = _y;
     this->name = _name;
     blockable = false;
-    path="./res/game/construct/0-castle.png";
+    path = "./res/game/construct/0-castle.png";
+    chest_size = 60;
+    chest = new Item_Pickup[chest_size];
   }
 }
 
@@ -36,6 +38,22 @@ bool Construct::SetOwnerID(int ID)
   return false;
 }
 
+Item_Pickup *Construct::GetChest()
+{
+  return chest;
+}
+
+int Construct::GetChestSize()
+{
+  return chest_size;
+}
+
+void Construct::SetChest(int i, Item_Pickup item)
+{
+  this->chest[i] = item;
+}
+
 Construct::~Construct()
 {
+  delete chest;
 }

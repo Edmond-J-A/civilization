@@ -53,29 +53,38 @@ ItemSlot::ItemSlot(int size, QWidget *parent)
 
 void ItemSlot::enterEvent(QEvent *event)
 {
-  title->setText(QString::fromStdString(this->item.item.GetName()));
-  QString style = button->styleSheet();
-  QString background_image = "image: url(" + QString::fromStdString(item.item.GetPath()) + ");";
-  QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: " + QString::number(button->width() / 2) + "px;" + "border: 3px solid gold;";
-  button->setStyleSheet(style_sheet);
+  if (!disabled)
+  {
+    title->setText(QString::fromStdString(this->item.item.GetName()));
+    QString style = button->styleSheet();
+    QString background_image = "image: url(" + QString::fromStdString(item.item.GetPath()) + ");";
+    QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: " + QString::number(button->width() / 2) + "px;" + "border: 3px solid gold;";
+    button->setStyleSheet(style_sheet);
+  }
 }
 
 void ItemSlot::leaveEvent(QEvent *event)
 {
-  title->setText("");
-  QString background_image = "image: url(" + QString::fromStdString(item.item.GetPath()) + ");";
-  QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: " + QString::number(button->width() / 2) + "px;";
-  button->setStyleSheet(style_sheet);
+  if (!disabled)
+  {
+    title->setText("");
+    QString background_image = "image: url(" + QString::fromStdString(item.item.GetPath()) + ");";
+    QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: " + QString::number(button->width() / 2) + "px;";
+    button->setStyleSheet(style_sheet);
+  }
 }
 
 void ItemSlot::mousePressEvent(QMouseEvent *event)
 {
-  if (event->button() == Qt::LeftButton)
+  if (!disabled)
   {
-    this->mousePressed = true;
-    emit itemClicked(item); // 发送信号并传递item数据
+    if (event->button() == Qt::LeftButton)
+    {
+      this->mousePressed = true;
+      emit itemClicked(item); // 发送信号并传递item数据
+    }
+    event->accept();
   }
-  event->accept();
 }
 
 void ItemSlot::SetItemPickup(Item_Pickup _item)
@@ -109,6 +118,20 @@ Item_Pickup ItemSlot::GetItemPickup()
 
 void ItemSlot::on_button_clicked()
 {
-  QMouseEvent *event = new QMouseEvent(QEvent::MouseButtonPress, button->mapToGlobal(QPoint()), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-  QApplication::postEvent(this, event);
+  if (!disabled)
+  {
+    QMouseEvent *event = new QMouseEvent(QEvent::MouseButtonPress, button->mapToGlobal(QPoint()), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QApplication::postEvent(this, event);
+  }
+}
+
+void ItemSlot::SetDisabled(bool state)
+{
+  this->disabled = state;
+  if (state)
+  {
+    QString background_image = "image: url(./res/game/item_slot_disabled.png);";
+    QString style_sheet = "background-color: rgba(255, 255, 255, 0);" + background_image + "border-radius: " + QString::number(button->width() / 2) + "px;";
+    button->setStyleSheet(style_sheet);
+  }
 }

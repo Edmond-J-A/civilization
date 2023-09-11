@@ -86,7 +86,7 @@ private:
   std::vector<ItemSlot *> toolbar_button, bag_button,chest_bag_button,chest_button;
   std::map<std::string, Item> itemsList;
   Item_Pickup Cursor_item;
-
+  Construct * chestOpen;
 private slots:
   void on_B_set_clicked();
   void on_B_start_clicked();

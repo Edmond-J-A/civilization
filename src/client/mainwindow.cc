@@ -509,40 +509,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         toolbar_button[i]->SetSelected(false);
       }
     }
-    else if (event->key() >= Qt::Key_C)
+    else if (event->key() == Qt::Key_C)
     {
-      ui->bag_ui->setCurrentIndex(1);
-      ui->bag_ui->setVisible(!ui->bag_ui->isVisible());
-      if (!ui->bag_ui->isVisible())
-      {
-        this->me->PickUp(Cursor_item);
-        Item_Pickup empty;
-        Cursor_item = empty;
-      }
-      ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
-
-      if (toolbar_button[0]->isVisible())
-      {
-        for (int i = 0; i < chest_bag_button.size(); i++)
-        {
-          chest_bag_button[i]->SetItemPickup(this->me->GetPickup(i));
-        }
-      }
-      else
-      {
-        for (int i = 0; i < toolbar_button.size(); i++)
-        {
-          toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
-        }
-      }
-      for (int i = 0; i < toolbar_button.size(); i++)
-      {
-        toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
-      }
     }
     else
     {
-      // 处理其他按键事件
     }
   }
 }
@@ -786,6 +757,26 @@ void MainWindow::onItemClicked(Item_Pickup item)
     }
   }
 
+  for (int i = 0; i < chest_button.size(); i++)
+  {
+    if (chest_button[i]->GetPressed())
+    {
+      if (item.item.GetName() == Cursor_item.item.GetName())
+      {
+        Cursor_item.number += item.number;
+        if (Cursor_item.number > Cursor_item.item.GetMax())
+        {
+          item.number = Cursor_item.number - Cursor_item.item.GetMax();
+          Cursor_item.number = Cursor_item.item.GetMax();
+        }
+      }
+      this->chestOpen->SetChest(i, Cursor_item);
+      chest_button[i]->SetItemPickup(Cursor_item);
+      Cursor_item = item;
+      return;
+    }
+  }
+
   for (int i = 0; i < toolbar_button.size(); i++)
   {
     if (toolbar_button[i]->GetPressed())
@@ -829,6 +820,58 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             }
           }
           return;
+        }
+      }
+    }
+    else if (event->button() == Qt::RightButton)
+    {
+      Player player = *(this->me);
+      Point player_location = player.GetLocation();
+      int left_top_x = player_location.GetX() - DEFUALT_WIDTH / 2;
+      int left_top_y = player_location.GetY() - DEFUALT_HEIGHT / 2;
+      int cursor_block_location_x = (mousePosition.rx() + left_top_x) / BLOCK_SIZE;
+      int cursor_block_location_y = (mousePosition.ry() + left_top_y) / BLOCK_SIZE;
+      if (this->gameMap[cursor_block_location_x][cursor_block_location_y] != NULL && this->gameMap[cursor_block_location_x][cursor_block_location_y]->GetChest() != NULL)
+      {
+        chestOpen=this->gameMap[cursor_block_location_x][cursor_block_location_y];
+        Item_Pickup *temp = this->gameMap[cursor_block_location_x][cursor_block_location_y]->GetChest();
+        int temp_size = this->gameMap[cursor_block_location_x][cursor_block_location_y]->GetChestSize();
+        for (int i = 0; i < MAX_CHEST_SIZE; i++)
+        {
+          if(i>=temp_size){
+            chest_button[i]->SetDisabled(true);
+            continue;
+          }
+          chest_button[i]->SetDisabled(false);
+          chest_button[i]->SetItemPickup(temp[i]);
+        }
+        ui->bag_ui->setCurrentIndex(1);
+        ui->bag_ui->setVisible(!ui->bag_ui->isVisible());
+        if (!ui->bag_ui->isVisible())
+        {
+          this->me->PickUp(Cursor_item);
+          Item_Pickup empty;
+          Cursor_item = empty;
+        }
+        ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
+
+        if (toolbar_button[0]->isVisible())
+        {
+          for (int i = 0; i < chest_bag_button.size(); i++)
+          {
+            chest_bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+          }
+        }
+        else
+        {
+          for (int i = 0; i < toolbar_button.size(); i++)
+          {
+            toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
+          }
+        }
+        for (int i = 0; i < toolbar_button.size(); i++)
+        {
+          toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
         }
       }
     }
