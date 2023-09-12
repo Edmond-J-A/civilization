@@ -209,10 +209,7 @@ MainWindow::MainWindow(QWidget *parent)
   p->PickUp(Item_Pickup(itemsList["wood"], 10));
   p->PickUp(Item_Pickup(itemsList["wood"], 10));
   p->PickUp(Item_Pickup(itemsList["wood"], 10));
-  p->PickUp(Item_Pickup(itemsList["wood"], 10));
-  p->PickUp(Item_Pickup(itemsList["wood"], 10));
-  p->PickUp(Item_Pickup(itemsList["wood"], 10));
-  p->PickUp(Item_Pickup(itemsList["wood"], 10));
+  p->SetBag(10, Item_Pickup(itemsList["wood"], 10));
   p->PickUp(Item_Pickup(itemsList["castle"], 1));
 }
 
@@ -723,16 +720,27 @@ void MainWindow::onItemClicked(Item_Pickup item)
     {
       if (item.item.GetName() == Cursor_item.item.GetName())
       {
-        Cursor_item.number += item.number;
-        if (Cursor_item.number > Cursor_item.item.GetMax())
+        item.number += Cursor_item.number;
+        if (item.number > item.item.GetMax())
         {
-          item.number = Cursor_item.number - Cursor_item.item.GetMax();
-          Cursor_item.number = Cursor_item.item.GetMax();
+          Cursor_item.number = item.number - item.item.GetMax();
+          item.number = item.item.GetMax();
         }
+        else
+        {
+          Item_Pickup invalid;
+          Cursor_item = invalid;
+        }
+        bag_button[i]->SetItemPickup(item);
+        this->me->SetBag(i, item);
       }
-      this->me->SetBag(i, Cursor_item);
-      bag_button[i]->SetItemPickup(Cursor_item);
-      Cursor_item = item;
+      else
+      {
+        this->me->SetBag(i, Cursor_item);
+        bag_button[i]->SetItemPickup(Cursor_item);
+        Cursor_item = item;
+      }
+
       return;
     }
   }
@@ -743,16 +751,27 @@ void MainWindow::onItemClicked(Item_Pickup item)
     {
       if (item.item.GetName() == Cursor_item.item.GetName())
       {
-        Cursor_item.number += item.number;
-        if (Cursor_item.number > Cursor_item.item.GetMax())
+        item.number += Cursor_item.number;
+        if (item.number > item.item.GetMax())
         {
-          item.number = Cursor_item.number - Cursor_item.item.GetMax();
-          Cursor_item.number = Cursor_item.item.GetMax();
+          Cursor_item.number = item.number - item.item.GetMax();
+          item.number = item.item.GetMax();
         }
+        else
+        {
+          Item_Pickup invalid;
+          Cursor_item = invalid;
+        }
+        chest_bag_button[i]->SetItemPickup(item);
+        this->me->SetBag(i, item);
       }
-      this->me->SetBag(i, Cursor_item);
-      chest_bag_button[i]->SetItemPickup(Cursor_item);
-      Cursor_item = item;
+      else
+      {
+        this->me->SetBag(i, Cursor_item);
+        chest_bag_button[i]->SetItemPickup(Cursor_item);
+        Cursor_item = item;
+      }
+
       return;
     }
   }
@@ -763,16 +782,27 @@ void MainWindow::onItemClicked(Item_Pickup item)
     {
       if (item.item.GetName() == Cursor_item.item.GetName())
       {
-        Cursor_item.number += item.number;
-        if (Cursor_item.number > Cursor_item.item.GetMax())
+        item.number += Cursor_item.number;
+        if (item.number > item.item.GetMax())
         {
-          item.number = Cursor_item.number - Cursor_item.item.GetMax();
-          Cursor_item.number = Cursor_item.item.GetMax();
+          Cursor_item.number = item.number - item.item.GetMax();
+          item.number = item.item.GetMax();
         }
+        else
+        {
+          Item_Pickup invalid;
+          Cursor_item = invalid;
+        }
+        chest_button[i]->SetItemPickup(item);
+        this->chestOpen->SetChest(i, item);
       }
-      this->chestOpen->SetChest(i, Cursor_item);
-      chest_button[i]->SetItemPickup(Cursor_item);
-      Cursor_item = item;
+      else
+      {
+        this->chestOpen->SetChest(i, Cursor_item);
+        chest_button[i]->SetItemPickup(Cursor_item);
+        Cursor_item = item;
+      }
+
       return;
     }
   }
@@ -833,12 +863,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
       int cursor_block_location_y = (mousePosition.ry() + left_top_y) / BLOCK_SIZE;
       if (this->gameMap[cursor_block_location_x][cursor_block_location_y] != NULL && this->gameMap[cursor_block_location_x][cursor_block_location_y]->GetChest() != NULL)
       {
-        chestOpen=this->gameMap[cursor_block_location_x][cursor_block_location_y];
+        chestOpen = this->gameMap[cursor_block_location_x][cursor_block_location_y];
         Item_Pickup *temp = this->gameMap[cursor_block_location_x][cursor_block_location_y]->GetChest();
         int temp_size = this->gameMap[cursor_block_location_x][cursor_block_location_y]->GetChestSize();
         for (int i = 0; i < MAX_CHEST_SIZE; i++)
         {
-          if(i>=temp_size){
+          if (i >= temp_size)
+          {
             chest_button[i]->SetDisabled(true);
             continue;
           }
