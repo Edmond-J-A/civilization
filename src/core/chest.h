@@ -1,11 +1,17 @@
-#ifndef _CHEST
-#define _CHEST
+#ifndef CHEST_H
+#define CHEST_H
 
-#include "map"
+#include "item.h"
 
-class chest {
-  std::map<int, int> inside;
-  int chest_size;
+class Chest
+{
+private:
+  Item *contents;
+  unsigned int capacity;
+
+public:
+  Chest(int _capacity);
+  ~Chest();
 };
 
 #endif
