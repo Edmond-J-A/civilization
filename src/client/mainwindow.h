@@ -3,7 +3,6 @@
 
 #include <random>
 #include <list>
-#include <map>
 #include <ctime>
 #include <algorithm>
 #include <fstream>
@@ -73,7 +72,7 @@ private:
   Player *me = NULL;
   std::map<Point, int> decorates;
   int map_x_min = 0, map_y_min = 0, map_x_max = 0, map_y_max = 0;
-  int REFRESH;
+  int REFRESH,GAMETICK;
   bool isplaying = false;
   QMediaPlayer *mediaPlayer;
   QMediaPlaylist *playlist;

@@ -172,6 +172,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
 
+  GAMETICK = startTimer(1000);
+
   ui->bag_ui->setVisible(false);
   pressTimer = new QTimer(this);
   pressTimer->setSingleShot(true);
@@ -231,6 +233,18 @@ void MainWindow::timerEvent(QTimerEvent *event)
     else if (event->timerId() == building_cursor.GetTimerID())
     {
       building_cursor.NextFrame();
+    }
+    else if (event->timerId() == GAMETICK)
+    {
+      for (int i = 0; i < gameMap.size(); i++)
+      {
+        for (int j = 0; j < gameMap[i].size(); j++)
+        {
+          if(gameMap[i][j]!=NULL){
+            gameMap[i][j]->TickAction(this->itemsList);
+          }
+        }
+      }
     }
     for (auto it = playerList.begin(); it != playerList.end(); it++)
     {

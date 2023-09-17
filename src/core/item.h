@@ -16,10 +16,11 @@ private:
   int maxStack = 1;
   double durability = -1;
   std::string path = "";
+  double buildingtime = 0;
 
 public:
   Item();
-  Item(int _ID, std::string _name, int _maxStack, std::string _path, double _durability = -1.0);
+  Item(int _ID, std::string _name, int _maxStack, std::string _path, double _durability = -1.0, double buildingtime = 0);
   ~Item();
   int GetID() { return this->ID; }
   std::string GetName() { return this->name; }
@@ -29,6 +30,6 @@ public:
   bool operator==(const Item &other) { return (this->ID == other.ID && this->name == other.name); }
   bool IsValid() { return ID > 0; }
   std::string GetPath() { return this->path; }
-  bool Put(std::vector<std::vector<Construct *>>& gameMap,int x,int y,int owner);
+  bool Put(std::vector<std::vector<Construct *>> &gameMap, int x, int y, int owner);
 };
 #endif

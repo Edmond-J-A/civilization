@@ -28,6 +28,19 @@ Construct::Construct(std::string _name, int owner, int _x, int _y)
   }
 }
 
+void Construct::TickAction(std::map<std::string, Item>& itemsList)
+{
+  if (this->name == "castle")
+  {
+    this->progress += 100;
+    if (this->progress == 100)
+    {
+      this->progress = this->progress%100;
+      this->AddToChest(Item_Pickup(itemsList["wood"], 10));
+    }
+  }
+}
+
 bool Construct::SetOwnerID(int ID)
 {
   if (this->ownerID == 0)
@@ -56,4 +69,35 @@ void Construct::SetChest(int i, Item_Pickup item)
 Construct::~Construct()
 {
   delete chest;
+}
+
+void Construct::AddToChest(Item_Pickup itm)
+{
+  for (int i = 0; i < this->chest_size; i++)
+  {
+    if (this->chest[i].item.GetName() == itm.item.GetName())
+    {
+      if (this->chest[i].item.GetMax() > this->chest[i].number)
+      {
+        this->chest[i].number += itm.number;
+        itm.number = this->chest[i].number - this->chest[i].item.GetMax();
+        if (itm.number > 0)
+        {
+          this->chest[i].number = this->chest[i].item.GetMax();
+        }
+        else
+        {
+          return;
+        }
+      }
+    }
+  }
+  for (int i = 0; i < this->chest_size; i++)
+  {
+    if (!this->chest[i].item.IsValid())
+    {
+      this->chest[i] = itm;
+      return;
+    }
+  }
 }
