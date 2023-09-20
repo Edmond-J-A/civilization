@@ -27,6 +27,9 @@ bool Item::Put(std::vector<std::vector<Construct *>> &gameMap, int x, int y, int
     {
       gameMap[x][y] = new Construct("castle", owner, x, y);
       return true;
+    }else if(this->name =="workbench"){
+      gameMap[x][y] = new Construct("workbench", owner, x, y);
+      return true;
     }
     else
     {

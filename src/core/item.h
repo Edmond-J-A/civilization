@@ -28,7 +28,7 @@ public:
   void SetDurability(double d) { this->durability = d; }
   double GetDurability() { return this->durability; }
   bool operator==(const Item &other) { return (this->ID == other.ID && this->name == other.name); }
-  bool IsValid() { return ID > 0; }
+  bool IsValid() { return ID >= 0; }
   std::string GetPath() { return this->path; }
   bool Put(std::vector<std::vector<Construct *>> &gameMap, int x, int y, int owner);
 };

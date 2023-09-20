@@ -171,6 +171,33 @@ MainWindow::MainWindow(QWidget *parent)
     chest_button.push_back(is);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("workbench_bag_%1").arg(i));
+    ui->workbench_bag_1->addWidget(is);
+    workbench_bag_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("workbench_bag_%2").arg(i));
+    ui->workbench_bag_2->addWidget(is);
+    workbench_bag_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 20; i++)
+  {
+    ItemSlot *is = new ItemSlot(32, this);
+    is->setBaseSize(33, 35);
+    is->setObjectName(QString("workbench_bag_%3").arg(i));
+    ui->workbench_bag_3->addWidget(is);
+    workbench_bag_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
 
   GAMETICK = startTimer(1000);
 
@@ -213,6 +240,11 @@ MainWindow::MainWindow(QWidget *parent)
   p->PickUp(Item_Pickup(itemsList["wood"], 10));
   p->SetBag(10, Item_Pickup(itemsList["wood"], 10));
   p->PickUp(Item_Pickup(itemsList["castle"], 1));
+  p->PickUp(Item_Pickup(itemsList["workbench"], 1));
+  for (int i = 0; i < toolbar_button.size(); i++)
+  {
+    this->toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
+  }
 }
 
 MainWindow::~MainWindow()
@@ -240,7 +272,8 @@ void MainWindow::timerEvent(QTimerEvent *event)
       {
         for (int j = 0; j < gameMap[i].size(); j++)
         {
-          if(gameMap[i][j]!=NULL){
+          if (gameMap[i][j] != NULL)
+          {
             gameMap[i][j]->TickAction(this->itemsList);
           }
         }
@@ -349,6 +382,12 @@ void MainWindow::paintEvent(QPaintEvent *event)
     else if (ui->bag_ui->currentIndex() == 1)
     {
       QPixmap *pix_bag_background = new QPixmap("./res/game/chest.png");
+      painter.drawPixmap(20, 20, 920, 600, *pix_bag_background);
+      delete pix_bag_background;
+    }
+    else if (ui->bag_ui->currentIndex() == 2)
+    {
+      QPixmap *pix_bag_background = new QPixmap("./res/game/workbench.png");
       painter.drawPixmap(20, 20, 920, 600, *pix_bag_background);
       delete pix_bag_background;
     }
@@ -522,6 +561,33 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
     else if (event->key() == Qt::Key_C)
     {
+      ui->bag_ui->setCurrentIndex(2);
+      ui->bag_ui->setVisible(!ui->bag_ui->isVisible());
+      if (!ui->bag_ui->isVisible())
+      {
+        this->me->PickUp(Cursor_item);
+        Item_Pickup empty;
+        Cursor_item = empty;
+      }
+      ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
+      if (toolbar_button[0]->isVisible())
+      {
+        for (int i = 0; i < bag_button.size(); i++)
+        {
+          bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+        }
+      }
+      else
+      {
+        for (int i = 0; i < toolbar_button.size(); i++)
+        {
+          toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
+        }
+      }
+      for (int i = 0; i < toolbar_button.size(); i++)
+      {
+        toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
+      }
     }
     else
     {
@@ -831,6 +897,37 @@ void MainWindow::onItemClicked(Item_Pickup item)
     }
     toolbar_button[i]->SetSelected(false);
   }
+
+  for (int i = 0; i < workbench_bag_button.size(); i++)
+  {
+    if (workbench_bag_button[i]->GetPressed())
+    {
+      if (item.item.GetName() == Cursor_item.item.GetName())
+      {
+        item.number += Cursor_item.number;
+        if (item.number > item.item.GetMax())
+        {
+          Cursor_item.number = item.number - item.item.GetMax();
+          item.number = item.item.GetMax();
+        }
+        else
+        {
+          Item_Pickup invalid;
+          Cursor_item = invalid;
+        }
+        workbench_bag_button[i]->SetItemPickup(item);
+        this->me->SetBag(i, item);
+      }
+      else
+      {
+        this->me->SetBag(i, Cursor_item);
+        workbench_bag_button[i]->SetItemPickup(Cursor_item);
+        Cursor_item = item;
+      }
+
+      return;
+    }
+  }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -875,7 +972,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
       int left_top_y = player_location.GetY() - DEFUALT_HEIGHT / 2;
       int cursor_block_location_x = (mousePosition.rx() + left_top_x) / BLOCK_SIZE;
       int cursor_block_location_y = (mousePosition.ry() + left_top_y) / BLOCK_SIZE;
-      if (this->gameMap[cursor_block_location_x][cursor_block_location_y] != NULL && this->gameMap[cursor_block_location_x][cursor_block_location_y]->GetChest() != NULL)
+      if (this->gameMap[cursor_block_location_x][cursor_block_location_y] != NULL && this->gameMap[cursor_block_location_x][cursor_block_location_y]->IsChest())
       {
         chestOpen = this->gameMap[cursor_block_location_x][cursor_block_location_y];
         Item_Pickup *temp = this->gameMap[cursor_block_location_x][cursor_block_location_y]->GetChest();
@@ -905,6 +1002,39 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
           for (int i = 0; i < chest_bag_button.size(); i++)
           {
             chest_bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+          }
+        }
+        else
+        {
+          for (int i = 0; i < toolbar_button.size(); i++)
+          {
+            toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
+          }
+        }
+        for (int i = 0; i < toolbar_button.size(); i++)
+        {
+          toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
+        }
+      }
+      else if (this->gameMap[cursor_block_location_x][cursor_block_location_y] != NULL && this->gameMap[cursor_block_location_x][cursor_block_location_y]->GetName() == "workbench")
+      {
+        ui->bag_ui->setCurrentIndex(2);
+        ui->bag_ui->setVisible(!ui->bag_ui->isVisible());
+        if (!ui->bag_ui->isVisible())
+        {
+          this->me->PickUp(Cursor_item);
+          Item_Pickup empty;
+          Cursor_item = empty;
+        }
+        /*合成表初始化在这*/
+
+        ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
+
+        if (toolbar_button[0]->isVisible())
+        {
+          for (int i = 0; i < chest_bag_button.size(); i++)
+          {
+            workbench_bag_button[i]->SetItemPickup(this->me->GetPickup(i));
           }
         }
         else

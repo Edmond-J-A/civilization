@@ -28,7 +28,7 @@ public:
   ~Construct();
   bool SetOwnerID(int ID);
   std::string GetPath() { return this->path; }
-  void TickAction(std::map<std::string, Item>& itemsList);
+  void TickAction(std::map<std::string, Item> &itemsList);
   bool Place();
   bool Destory();
   bool IsBlock() { return blockable; }
@@ -36,6 +36,8 @@ public:
   int GetChestSize();
   void SetChest(int i, Item_Pickup item);
   void AddToChest(Item_Pickup item);
+  bool IsChest() { return chest_size != 0; }
+  std::string GetName() { return this->name; }
 };
 
 #endif
