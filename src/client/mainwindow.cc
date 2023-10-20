@@ -198,7 +198,51 @@ MainWindow::MainWindow(QWidget *parent)
     workbench_bag_button.push_back(is);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
-
+  for (int i = 0; i < 5; i++)
+  {
+    ItemSlot *is = new ItemSlot(64, this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("recipe_1_%3").arg(i));
+    ui->recipe_1->addWidget(is);
+    recipe_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 5; i++)
+  {
+    ItemSlot *is = new ItemSlot(64, this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("recipe_2_%3").arg(i));
+    ui->recipe_2->addWidget(is);
+    recipe_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 5; i++)
+  {
+    ItemSlot *is = new ItemSlot(64, this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("recipe_3_%3").arg(i));
+    ui->recipe_3->addWidget(is);
+    recipe_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 5; i++)
+  {
+    ItemSlot *is = new ItemSlot(64, this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("recipe_4_%3").arg(i));
+    ui->recipe_4->addWidget(is);
+    recipe_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 5; i++)
+  {
+    ItemSlot *is = new ItemSlot(64, this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("recipe_5_%3").arg(i));
+    ui->recipe_5->addWidget(is);
+    recipe_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
   GAMETICK = startTimer(1000);
 
   ui->bag_ui->setVisible(false);
@@ -548,9 +592,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
     else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
     {
+      int keyIndex = event->key() - Qt::Key_1 >= 0 ? event->key() - Qt::Key_1 : 9;
       for (int i = 0; i < toolbar_button.size(); i++)
       {
-        int keyIndex = event->key() - Qt::Key_0 - 1 >= 0 ? event->key() - Qt::Key_0 - 1 : 9;
         if (i == keyIndex)
         {
           toolbar_button[i]->SetSelected(!toolbar_button[i]->GetSelected());
@@ -587,6 +631,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
       for (int i = 0; i < toolbar_button.size(); i++)
       {
         toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
+      }
+    }
+    else if (event->key() == Qt::Key_T)
+    {
+      for (int i = 0; i < 10; i++)
+      {
+        QMessageBox::information(this, "bag", QString::fromStdString(this->me->GetPickup(i).item.GetName()) + QString::number(this->me->GetPickup(i).number));
       }
     }
     else
@@ -778,7 +829,23 @@ std::map<std::string, Item> MainWindow::createItemMapFromFile()
     if (iss >> ID >> name >> maxStack >> durability)
     {
       std::string path = "./res/game/items/" + std::to_string(ID) + "-" + name + ".png";
-      Item item(ID, name, maxStack, path, durability);
+      if (ID >= 3)
+      {
+        path = "./res/game/items/2-workbench.png";
+      }
+      int recipeItem;
+      int num;
+      std::map<int, int> tmp_recipe;
+      while (iss >> recipeItem >> num)
+      {
+        tmp_recipe.insert(std::pair<int, int>(recipeItem, num));
+      }
+
+      Item item(ID, name, maxStack, path, tmp_recipe, durability);
+      if (tmp_recipe.size() != 0)
+      {
+        recipeList.push_back(item);
+      }
       itemMap[name] = item;
     }
     else
@@ -928,6 +995,27 @@ void MainWindow::onItemClicked(Item_Pickup item)
       return;
     }
   }
+
+  for (int i = 0; i < recipe_button.size(); i++)
+  {
+    if (recipe_button[i]->GetPressed())
+    {
+      if (this->me->Use(item.item.GetRecipe()))
+      {
+        this->me->PickUp(item);
+        /*以下部分后期整理为函数*/
+        for (int i = 0; i < workbench_bag_button.size(); i++)
+        {
+          workbench_bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+        }
+      }
+      else
+      {
+      }
+      recipe_button[i]->SetPressed(false);
+      return;
+    }
+  }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -949,22 +1037,19 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 
         if (toolbar_button[i]->GetSelected())
         {
-
           if (abs(player_block_location_x - cursor_block_location_x) < 5 && abs(player_block_location_y - cursor_block_location_y) < 5)
           {
             if (toolbar_button[i]->GetItemPickup().item.Put(this->gameMap, cursor_block_location_x, cursor_block_location_y, this->myID))
             {
-              Item_Pickup tmp = toolbar_button[i]->GetItemPickup();
-              tmp.UseOne();
-              toolbar_button[i]->SetItemPickup(tmp);
-              this->me->Use(tmp.item.GetName());
+              this->me->Use(i);
+              toolbar_button[i]->SetItemPickup(this->me->GetPickup(i));
             }
           }
           return;
         }
       }
     }
-    else if (event->button() == Qt::RightButton)
+    else if (event->button() == Qt::RightButton && !ui->bag_ui->isVisible())
     {
       Player player = *(this->me);
       Point player_location = player.GetLocation();
@@ -1027,6 +1112,17 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
           Cursor_item = empty;
         }
         /*合成表初始化在这*/
+        for (int i = 0; i < recipe_button.size(); i++)
+        {
+          if (recipe_page * 25 + i < recipeList.size())
+          {
+            recipe_button[i]->SetItemPickup(Item_Pickup(recipeList[recipe_page * 25 + i], 1));
+          }
+          else
+          {
+            recipe_button[i]->SetItemPickup(Item_Pickup());
+          }
+        }
 
         ui->toolbar_background->setVisible(!ui->toolbar_background->isVisible());
 
@@ -1048,6 +1144,44 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         {
           toolbar_button[i]->setVisible(!toolbar_button[i]->isVisible());
         }
+      }
+    }
+  }
+}
+
+void MainWindow::on_B_lastpage_clicked()
+{
+  if (recipe_page > 0)
+  {
+    recipe_page--;
+    for (int i = 0; i < recipe_button.size(); i++)
+    {
+      if (recipe_page * 25 + i < recipeList.size())
+      {
+        recipe_button[i]->SetItemPickup(Item_Pickup(recipeList[recipe_page * 25 + i], 1));
+      }
+      else
+      {
+        break;
+      }
+    }
+  }
+}
+
+void MainWindow::on_B_nextpage_clicked()
+{
+  if (25 * (recipe_page + 1) < recipeList.size())
+  {
+    recipe_page++;
+    for (int i = 0; i < recipe_button.size(); i++)
+    {
+      if (recipe_page * 25 + i < recipeList.size())
+      {
+        recipe_button[i]->SetItemPickup(Item_Pickup(recipeList[recipe_page * 25 + i], 1));
+      }
+      else
+      {
+        recipe_button[i]->SetItemPickup(Item_Pickup());
       }
     }
   }

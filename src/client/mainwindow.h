@@ -72,7 +72,7 @@ private:
   Player *me = NULL;
   std::map<Point, int> decorates;
   int map_x_min = 0, map_y_min = 0, map_x_max = 0, map_y_max = 0;
-  int REFRESH,GAMETICK;
+  int REFRESH, GAMETICK;
   bool isplaying = false;
   QMediaPlayer *mediaPlayer;
   QMediaPlaylist *playlist;
@@ -82,11 +82,15 @@ private:
   int ANIMATION_TIME;
   Animation building_cursor;
   QTimer *pressTimer;
-  std::vector<ItemSlot *> toolbar_button, bag_button,chest_bag_button,chest_button,workbench_bag_button;
+  std::vector<ItemSlot *> recipe_button, toolbar_button, bag_button, chest_bag_button, chest_button, workbench_bag_button;
   std::map<std::string, Item> itemsList;
+  std::vector<Item> recipeList;
+  int recipe_page = 0;
   Item_Pickup Cursor_item;
-  Construct * chestOpen;
+  Construct *chestOpen;
 private slots:
+  void on_B_lastpage_clicked();
+  void on_B_nextpage_clicked();
   void on_B_set_clicked();
   void on_B_start_clicked();
   void on_B_setreturn_clicked();

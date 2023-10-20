@@ -17,7 +17,7 @@ struct Item_Pickup
   bool UseOne()
   {
     number--;
-    return number == 0;
+    return number <= 0;
   }
 };
 
@@ -37,7 +37,9 @@ public:
   void PickUp(Item_Pickup i);
   Item_Pickup GetPickup(int i) { return this->bag[i]; }
   void SetBag(int i, Item_Pickup item);
-  void Use(std::string i);
+  void Use(int i);
+  bool Use(std::map<int,int> recipe);
+  std::map<int,int> CountBag();
 };
 
 #endif
