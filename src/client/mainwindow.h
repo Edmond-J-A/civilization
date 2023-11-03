@@ -63,7 +63,7 @@ public:
   void PlayerMove(int playerID, int direction);
   bool Block(Point p1, Point p2);
   std::map<std::string, Item> createItemMapFromFile();
-
+  Item GetItemByID(int i);
 private:
   Ui::MainWindow *ui;
   std::vector<std::vector<Construct *>> gameMap;
@@ -82,8 +82,9 @@ private:
   int ANIMATION_TIME;
   Animation building_cursor;
   QTimer *pressTimer;
-  std::vector<ItemSlot *> recipe_button, toolbar_button, bag_button, chest_bag_button, chest_button, workbench_bag_button;
+  std::vector<ItemSlot *> recipe_show_button, recipe_button, toolbar_button, bag_button, chest_bag_button, chest_button, workbench_bag_button;
   std::map<std::string, Item> itemsList;
+  ItemSlot *now_click = NULL;
   std::vector<Item> recipeList;
   int recipe_page = 0;
   Item_Pickup Cursor_item;

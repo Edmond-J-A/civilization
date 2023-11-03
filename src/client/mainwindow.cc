@@ -243,6 +243,34 @@ MainWindow::MainWindow(QWidget *parent)
     recipe_button.push_back(is);
     connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
   }
+  for (int i = 0; i < 3; i++)
+  {
+    ItemSlot *is = new ItemSlot(64, this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("recipe_show_%3").arg(i));
+    ui->recipe_show->addWidget(is);
+    recipe_show_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 3; i++)
+  {
+    ItemSlot *is = new ItemSlot(64, this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("recipe_show_%3").arg(i));
+    ui->recipe_show_2->addWidget(is);
+    recipe_show_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+  for (int i = 0; i < 3; i++)
+  {
+    ItemSlot *is = new ItemSlot(64, this);
+    is->setBaseSize(64, 64);
+    is->setObjectName(QString("recipe_show_%3").arg(i));
+    ui->recipe_show_3->addWidget(is);
+    recipe_show_button.push_back(is);
+    connect(is, &ItemSlot::itemClicked, this, &MainWindow::onItemClicked);
+  }
+
   GAMETICK = startTimer(1000);
 
   ui->bag_ui->setVisible(false);
@@ -1000,17 +1028,27 @@ void MainWindow::onItemClicked(Item_Pickup item)
   {
     if (recipe_button[i]->GetPressed())
     {
-      if (this->me->Use(item.item.GetRecipe()))
+      if (now_click == recipe_button[i])
       {
-        this->me->PickUp(item);
-        /*以下部分后期整理为函数*/
-        for (int i = 0; i < workbench_bag_button.size(); i++)
+        if (this->me->Use(item.item.GetRecipe()))
         {
-          workbench_bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+          this->me->PickUp(item);
+          for (int i = 0; i < workbench_bag_button.size(); i++)
+          {
+            workbench_bag_button[i]->SetItemPickup(this->me->GetPickup(i));
+          }
         }
       }
       else
       {
+        now_click = recipe_button[i];
+        std::map<int, int> recipe_list = item.item.GetRecipe();
+        int j = 0;
+        for (auto i = recipe_list.begin(); i != recipe_list.end(); i++)
+        {
+          recipe_show_button[j]->SetItemPickup(Item_Pickup(GetItemByID((*i).first), (*i).second));
+          j++;
+        }
       }
       recipe_button[i]->SetPressed(false);
       return;
@@ -1185,4 +1223,17 @@ void MainWindow::on_B_nextpage_clicked()
       }
     }
   }
+}
+
+Item MainWindow::GetItemByID(int j)
+{
+  for (auto i = itemsList.begin(); i != itemsList.end(); i++)
+  {
+    if ((*i).second.GetID() == j)
+    {
+      return (*i).second;
+    }
+  }
+  Item item;
+  return item;
 }

@@ -18,10 +18,12 @@ private:
   double durability = -1;
   std::string path = "";
   double buildingtime = 0;
-  std::map<int,int> recipe;
+  std::map<int, int> recipe;
+  int lock_level = 0;
+
 public:
   Item();
-  Item(int _ID, std::string _name, int _maxStack, std::string _path, std::map<int,int> tmp_recipe, double _durability = -1.0,double buildingtime = 0);
+  Item(int _ID, std::string _name, int _maxStack, std::string _path, std::map<int, int> tmp_recipe, double _durability = -1.0, double buildingtime = 0);
   ~Item();
   int GetID() { return this->ID; }
   std::string GetName() { return this->name; }
@@ -32,6 +34,6 @@ public:
   bool IsValid() { return ID >= 0; }
   std::string GetPath() { return this->path; }
   bool Put(std::vector<std::vector<Construct *>> &gameMap, int x, int y, int owner);
-  std::map<int,int> GetRecipe(){return this->recipe;}
+  std::map<int, int> GetRecipe() { return this->recipe; }
 };
 #endif
