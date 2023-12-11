@@ -857,10 +857,6 @@ std::map<std::string, Item> MainWindow::createItemMapFromFile()
     if (iss >> ID >> name >> maxStack >> durability)
     {
       std::string path = "./res/game/items/" + std::to_string(ID) + "-" + name + ".png";
-      if (ID >= 3)
-      {
-        path = "./res/game/items/2-workbench.png";
-      }
       int recipeItem;
       int num;
       std::map<int, int> tmp_recipe;

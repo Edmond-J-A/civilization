@@ -28,13 +28,25 @@ Construct::Construct(std::string _name, int owner, int _x, int _y)
   }
   else if (_name == "workbench")
   {
-    ID =1;
+    ID = 1;
     ownerID = owner;
     x = _x;
     y = _y;
     this->name = _name;
     blockable = false;
     path = "./res/game/construct/1-workbench.png";
+  }  
+  else if (_name == "farm")
+  {
+    ID = 2;
+    ownerID = owner;
+    x = _x;
+    y = _y;
+    this->name = _name;
+    blockable = false;
+    chest_size = 10;
+    path = "./res/game/construct/2-farm.png";
+    chest = new Item_Pickup[chest_size];
   }
 }
 
@@ -42,11 +54,20 @@ void Construct::TickAction(std::map<std::string, Item> &itemsList)
 {
   if (this->name == "castle")
   {
-    this->progress += 100;
+    this->progress += 1;
     if (this->progress == 100)
     {
       this->progress = this->progress % 100;
-      this->AddToChest(Item_Pickup(itemsList["wood"], 10));
+      this->AddToChest(Item_Pickup(itemsList["wood"], 1));
+    }
+  }
+  else if (this->name == "farm")
+  {
+    this->progress += 1;
+    if (this->progress == 100)
+    {
+      this->progress = this->progress % 100;
+      this->AddToChest(Item_Pickup(itemsList["food"], 1));
     }
   }
 }
@@ -78,7 +99,8 @@ void Construct::SetChest(int i, Item_Pickup item)
 
 Construct::~Construct()
 {
-  if(chest!=NULL){
+  if (chest != NULL)
+  {
     delete chest;
   }
 }
